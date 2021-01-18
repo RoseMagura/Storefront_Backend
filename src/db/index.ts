@@ -13,7 +13,7 @@ const pool = new Pool({
 });
 
 export default {
-    query: (text: any, params: any[], callback: any) => {
+    query: (text: string, params: string[], callback: any) => {
         const start = Date.now();
         return pool.query(text, params, (err, res) => {
             const duration = Date.now() - start;
