@@ -35,5 +35,5 @@ TODO: List endpoints
 
 ## Testing
 
-This application includes Jasmine tests. To run, execute `jasmine` in 
+This application includes Jasmine tests. To run, execute `yarn test` in 
 the terminal. 
