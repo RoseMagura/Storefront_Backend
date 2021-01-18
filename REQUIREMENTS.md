@@ -5,7 +5,7 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 ## API Endpoints
 #### Products
-- Index 
+- Index: /products
 - Show (args: product id)
 - Create (args: Product)[token required]
 - [OPTIONAL] Top 5 most popular products 
