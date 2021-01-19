@@ -7,7 +7,7 @@ These are the notes from a meeting with the frontend developer that describe wha
 #### Products
 - Index: /products
 - Show (args: product id): /products/:id
-- Create (args: Product)[token required]
+- Create (args: Product)[token required]: /products with body of {"name": "x", "price": y}
 - [OPTIONAL] Top 5 most popular products 
 - [OPTIONAL] Products by category (args: product category)
 

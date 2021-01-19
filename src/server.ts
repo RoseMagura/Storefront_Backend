@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(require('./routes/products'));
 
-initDB();
+// initDB();
 
 app.get('/', function (req: Request, res: Response) {
     res.send('Ready for requests to backend.');
