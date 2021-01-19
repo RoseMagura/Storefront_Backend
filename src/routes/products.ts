@@ -1,43 +1,31 @@
 import * as express from 'express';
 import { Request, Response } from "express";
-import db from '../db';
+import { connectToDB } from '../db/init';
+import { Sequelize } from 'sequelize';
+import * as ProductModel from '../models/product';
 
 const router = express.Router();
 
-export interface SQL {
-    rows: object
-}
-
-router.get('/products', (req: Request, res: Response): void => {
-    db.query('SELECT * FROM PRODUCTS;', [], (err: object, dbRes: SQL) => {
-        if(err) {
-            res.send(`${err}`);
-        }
-        res.send(dbRes.rows);
-    });
+// TODO: ADD PRICE COLUMN FOR PRODUCTS
+router.get('/products', async (req: Request, res: Response): Promise<void> => {
+    const seq = await connectToDB();
+    const Product = ProductModel(seq, Sequelize);
+    res.send(await Product.findAll());
 });
 
-router.get('/products/:id', (req: Request, res: Response): void => {
+router.get('/products/:id', async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
-    db.query(`SELECT * FROM PRODUCTS WHERE product_id = ${id};`, [], (err: object, dbRes: SQL) => {
-        if(err) {
-            res.send(`${err}`);
-        } else {
-            res.send(dbRes.rows);
-        }
-    });
+    const seq = await connectToDB();
+    const Product = ProductModel(seq, Sequelize);
+    res.send(await Product.findByPk(id));
 });
 
 // TODO: Needs to require JWT
-router.post('/products', (req: Request, res: Response): void => {
+router.post('/products', async (req: Request, res: Response): Promise<void> => {
     const { name, price } = req.body;
-    db.query(`INSERT INTO products (name, price) VALUES (\'${name}\', ${price})`, [], (err: object, dbRes: SQL) => {
-        if(err) {
-            res.send(`${err}`);
-        } else {
-            res.send(dbRes.rows);
-        }
-    });
+    const seq = await connectToDB();
+    const Product = ProductModel(seq, Sequelize);
+    res.send(await Product.create({ name, price}));
 });
 
 module.exports = router;
