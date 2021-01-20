@@ -1,33 +1,49 @@
 import * as express from 'express';
 import { Request, Response } from "express";
-import { connectToDB } from '../db/init';
-import { Sequelize } from 'sequelize';
-import * as ProductModel from '../models/product';
+import db from '../db/index';
 
 const router = express.Router();
 
-router.get('/products', async (req: Request, res: Response): Promise<void> => {
-    const seq = await connectToDB();
-    const Product = ProductModel(seq, Sequelize);
-    res.send(await Product.findAll());
+export interface SQL {
+    rows: object,
+    rowCount: number
+}
+
+router.get('/products', (req: Request, res: Response): void => {
+    db.query('SELECT * FROM PRODUCTS;', [], (err: object, dbRes: SQL) => {
+        if(err) {
+            res.send(`${err}`);
+        }
+        res.send(dbRes.rows);
+    });
 });
 
-router.get('/products/:id', async (req: Request, res: Response): Promise<void> => {
+router.get('/products/:id', (req: Request, res: Response): void => {
     const id = req.params.id;
-    const seq = await connectToDB();
-    const Product = ProductModel(seq, Sequelize);
-    const dbRes = await Product.findByPk(id);
-    dbRes === null 
-        ? res.send('Product not found')
-        : res.send(await Product.findByPk(id));
+    db.query(`SELECT * FROM PRODUCTS WHERE product_id = ${id};`, [], (err: object, dbRes: SQL) => {
+        if(err) {
+            res.send(`${err}`);
+        } else {
+            dbRes.rowCount === 0
+                ? res.send('Product not found')
+                : res.send(dbRes.rows);
+        }
+    });
 });
 
 // TODO: Needs to require JWT
-router.post('/products', async (req: Request, res: Response): Promise<void> => {
+router.post('/products', (req: Request, res: Response): void => {
     const { name, price } = req.body;
-    const seq = await connectToDB();
-    const Product = ProductModel(seq, Sequelize);
-    res.send(await Product.create({ name, price }));
+    db.query(`INSERT INTO products (name, price) VALUES (\'${name}\', ${price})`, [], (err: object, dbRes: SQL) => {
+        if(err) {
+            res.send(`${err}`);
+        } else {
+            dbRes.rowCount === 1 
+                ? res.send(`Sucessfully created ${name}`)
+                : res.send(`Error creating ${name}`);
+        }
+    });
 });
+
 
 module.exports = router;
