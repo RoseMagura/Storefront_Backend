@@ -1,40 +1,20 @@
 import db from '../db';
-import { SQL } from '../routes/products';
-import { Sequelize, DataTypes } from 'sequelize';
 import * as dotenv from 'dotenv';
-import * as Product from '../models/product';
+import { SQL } from '../routes/products';
 
 dotenv.config();
 
-export const connectToDB = async (): Promise<Sequelize> => {
-    const sequelize = new Sequelize(
-        `postgres://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`
+export const initDB = (): void => {
+    // formatQuery('CREATE DATABASE store;');
+    formatQuery(
+        'DROP TABLE IF EXISTS products; \
+        CREATE TABLE products ( \
+            product_id INT GENERATED ALWAYS AS IDENTITY, \
+            name VARCHAR(255) NOT NULL, \
+            price DECIMAL, \
+            image_url VARCHAR(255) \
+            PRIMARY KEY(id));'
     );
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-
-    // const Product = sequelize.import('../models/product');
-    // const { Product } = require('../models/product');
-    // Product.findAll().then((res) => console.log(res));
-    console.log(Product);
-    return sequelize;
-};
-
-// export const initDB = (): void => {
-//     // formatQuery('CREATE DATABASE store;');
-//     formatQuery(
-//         'DROP TABLE IF EXISTS products; \
-//         CREATE TABLE products ( \
-//             product_id INT GENERATED ALWAYS AS IDENTITY, \
-//             name VARCHAR(255) NOT NULL, \
-//             price DECIMAL, \
-//             image_url VARCHAR(255) \
-//             PRIMARY KEY(id));'
-//     );
 //     formatQuery(
 //         'DROP TABLE IF EXISTS users; \
 //         CREATE TABLE users ( \
@@ -57,16 +37,16 @@ export const connectToDB = async (): Promise<Sequelize> => {
 //                 REFERENCES users(user_id));'
 // );
 
-//     // initialize order-product join table
+    // initialize order-product join table
 
-//     // insert a user
-//     // insert a product
-//     // insert an order
-// };
+    // insert a user
+    // insert a product
+    // insert an order
+};
 
-// const formatQuery = (statement: string): void => {
-//     db.query(statement, [], (err: object, dbRes: SQL) => {
-//         if (err) {
-//             console.log(`${err}`);
-//         }});
-// };
+const formatQuery = (statement: string): void => {
+    db.query(statement, [], (err: object, dbRes: SQL) => {
+        if (err) {
+            console.log(`${err}`);
+        }});
+};
