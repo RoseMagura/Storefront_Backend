@@ -1,4 +1,4 @@
-import db from '../db';
+// import db from '../db';
 import * as dotenv from 'dotenv';
 import { SQL } from '../routes/products';
 
@@ -45,8 +45,8 @@ export const initDB = (): void => {
 };
 
 const formatQuery = (statement: string): void => {
-    db.query(statement, [], (err: object, dbRes: SQL) => {
-        if (err) {
-            console.log(`${err}`);
-        }});
+    // db.query(statement, [], (err: object, dbRes: SQL) => {
+    //     if (err) {
+    //         console.log(`${err}`);
+    //     }});
 };
