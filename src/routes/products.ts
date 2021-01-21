@@ -10,7 +10,7 @@ export interface SQL {
     rowCount?: number
 }
 
-router.get('/products', async (req: Request, res: Response): Promise<void> => {
+router.get('', async (req: Request, res: Response): Promise<void> => {
     try {
         res.send(await productModel.getAll());
     } catch (error: unknown) {
@@ -18,7 +18,7 @@ router.get('/products', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-router.get('/products/:id', async (req: Request, res: Response): Promise<void> => {
+router.get('/:id', async (req: Request, res: Response): Promise<void> => {
     const id = parseInt(req.params.id);
     try {
         const dbRes: SQL = await productModel.getById(id);
@@ -31,7 +31,7 @@ router.get('/products/:id', async (req: Request, res: Response): Promise<void> =
 });
 
 // TODO: Needs to require JWT
-router.post('/products', async (req: Request, res: Response): Promise<void> => {
+router.post('', async (req: Request, res: Response): Promise<void> => {
     const { name, price } = req.body;
     const dbRes: SQL = await productModel.create(name, price);
     dbRes.rowCount === 1 

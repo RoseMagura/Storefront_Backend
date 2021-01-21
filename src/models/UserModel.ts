@@ -27,7 +27,7 @@ export class UserModel {
     create(firstName: string, lastName: string, password: string): SQL | unknown {
         try {
             return query(
-                `INSERT INTO products (first_name, last_name, password) VALUES (\'${firstName}\', ${lastName}, ${password})`
+                `INSERT INTO USERS (first_name, last_name, password) VALUES (\'${firstName}\', \'${lastName}\', \'${password}\');`
             );
         } catch (error: unknown) {
             return error;

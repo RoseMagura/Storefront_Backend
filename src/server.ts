@@ -11,7 +11,12 @@ app.use(bodyParser.json());
 // initDB();
 
 app.use(express.static('public'));
-app.use(require('./routes/products'));
+
+app.use('/products', require('./routes/products'));
+app.use('/users', require('./routes/users'));
+// app.use('/orders', require('./routes/orders'));
+
+
 
 app.get('/', function (req: Request, res: Response) {
     res.send('Ready for requests to backend.');
