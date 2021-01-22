@@ -24,6 +24,14 @@ export class UserModel {
         }
     }
 
+    getByName(firstName: string, lastName: string): SQL | unknown {
+        try {
+            return query(`SELECT * FROM USERS WHERE first_name=\'${firstName}\' and last_name=\'${lastName}\'`);
+        } catch (error: unknown) {
+            return error;
+        }
+    }
+
     async create(firstName: string, lastName: string, password: string): Promise<SQL | unknown> {
         try {
             const hashVal = await bcrypt.hash(password, 10);
