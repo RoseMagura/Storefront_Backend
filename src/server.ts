@@ -7,12 +7,14 @@ import { UserModel } from './models/UserModel';
 import { SQL } from './routes/products';
 import * as jwt from 'jsonwebtoken';
 import * as cookieParser from 'cookie-parser';
+import * as cors from 'cors';
 
 export const app: express.Application = express();
 const address: string = '0.0.0.0:3000';
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors({origin: address}));
 
 // initDB();
 
@@ -28,7 +30,6 @@ app.get('/', (req: Request, res: Response): void => {
 
 app.post('/', (req: Request, res: Response): void => {
     const jwtKey = process.env.JWTKEY;
-    console.log(jwtKey);
     const { firstName, lastName, password } = req.body;
     const auth = signIn(firstName, lastName, password);
     const token = jwt.sign({ lastName }, jwtKey, {
@@ -38,7 +39,7 @@ app.post('/', (req: Request, res: Response): void => {
 
     if(auth){
         res.cookie('token', token, {maxAge: 600000});
-        res.end();
+        res.send(`${firstName} ${lastName} successfully logged in!`);
     } else {
         res.send('Unsuccessful login');
     }

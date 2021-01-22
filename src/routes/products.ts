@@ -1,8 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from "express";
 import { ProductModel } from '../models/ProductModel';
-import * as jwt from 'jsonwebtoken';
-
+import { checkToken } from '../auth';
 const router = express.Router();
 const productModel = new ProductModel();
 
@@ -35,30 +34,17 @@ router.post('', async (req: Request, res: Response): Promise<void> => {
     const { name, price } = req.body;
     const tokenStatus = checkToken(req.cookies.token);
     if(tokenStatus == 'Success') {
-        const dbRes: SQL = await productModel.create(name, price);
-        dbRes.rowCount === 1 
+        try {
+            const dbRes: SQL = await productModel.create(name, price);
+            dbRes.rowCount === 1 
             ? res.send(`Sucessfully created ${name}`)
             : res.send(`Error creating ${name}`);
+        } catch (error: unknown) {
+            res.send(error);
+        }
     } else {
         res.send(tokenStatus);
     }
 });
-
-export const checkToken = (token: string): string => {
-    if(token === undefined){
-        return '401: This endpoint requires JWT. Please login';
-    } else {
-        try {
-            jwt.verify(token, process.env.JWTKEY);
-            } catch (error) {
-                if (error instanceof jwt.JsonWebTokenError) {
-                    return '401: Token is unauthorized';
-                } else {
-                return '400: Error with request';     
-                }
-            }
-        return 'Success';
-    }
-}
 
 module.exports = router;
