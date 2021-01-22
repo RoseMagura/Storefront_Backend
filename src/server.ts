@@ -14,7 +14,7 @@ app.use(express.static('public'));
 
 app.use('/products', require('./routes/products'));
 app.use('/users', require('./routes/users'));
-// app.use('/orders', require('./routes/orders'));
+app.use('/orders', require('./routes/orders'));
 
 
 
