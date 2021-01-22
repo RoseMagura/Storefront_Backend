@@ -1,5 +1,6 @@
 import { query } from '../db/index';
 import { SQL } from '../routes/products';
+import * as bcrypt from 'bcrypt';
 
 export class UserModel {
     id: number;
@@ -23,11 +24,11 @@ export class UserModel {
         }
     }
 
-    // TODO: Store password as encrypted string, not plain text!!
-    create(firstName: string, lastName: string, password: string): SQL | unknown {
+    async create(firstName: string, lastName: string, password: string): Promise<SQL | unknown> {
         try {
+            const hashVal = await bcrypt.hash(password, 10);
             return query(
-                `INSERT INTO USERS (first_name, last_name, password) VALUES (\'${firstName}\', \'${lastName}\', \'${password}\');`
+                `INSERT INTO USERS (first_name, last_name, password) VALUES (\'${firstName}\', \'${lastName}\', \'${hashVal}\');`
             );
         } catch (error: unknown) {
             return error;
