@@ -1,12 +1,8 @@
 import { query } from '../db/index';
-import { SQL } from '../routes/products';
+import { SQL } from '../interfaces/SQL';
 import * as bcrypt from 'bcrypt';
 
 export class UserModel {
-    id: number;
-    firstName: string;
-    lastName: string;
-    password: string;
 
     getAll(): object | unknown {
         try {
@@ -16,7 +12,7 @@ export class UserModel {
         }
     }
 
-    getById(id: number): SQL | unknown {
+    getById(id: number): object | unknown {
         try {
             return query(`SELECT * FROM USERS WHERE user_id = ${id}`);
         } catch (error: unknown) {

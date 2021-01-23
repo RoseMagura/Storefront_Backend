@@ -4,11 +4,12 @@
     "module": "CommonJS",                     /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
     "allowJs": true,                       /* Allow javascript files to be compiled. */
     "outDir": "./dist",                        /* Redirect output structure to the directory. */
-    // "strict": true,                           /* Enable all strict type-checking options. */
+    "strict": true,                           /* Enable all strict type-checking options. */
     "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
     "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
     "skipLibCheck": true,                     /* Skip type checking of declaration files. */
-    "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
+    "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
+    "noImplicitAny": true
   },
   "exclude": [
       "./dist/**/*",

@@ -4,10 +4,11 @@ import * as bodyParser from 'body-parser';
 import { initDB } from './db/init';
 import * as bcrypt from 'bcrypt';
 import { UserModel } from './models/UserModel';
-import { SQL } from './routes/products';
+import { SQL } from './interfaces/SQL';
 import * as jwt from 'jsonwebtoken';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
+import { User } from './interfaces/User';
 
 export const app: express.Application = express();
 const address: string = '0.0.0.0:3000';
@@ -32,7 +33,7 @@ app.post('/', (req: Request, res: Response): void => {
     const jwtKey = process.env.JWTKEY;
     const { firstName, lastName, password } = req.body;
     const auth = signIn(firstName, lastName, password);
-    const token = jwt.sign({ lastName }, jwtKey, {
+    const token = jwt.sign({ lastName }, String(jwtKey), {
         algorithm: "HS256",
         expiresIn: 600
     });
@@ -47,11 +48,26 @@ app.post('/', (req: Request, res: Response): void => {
 
 app.listen(3000, async (): Promise<void> => {
     console.log(`starting app on: ${address}`);
+    // console.log('testing', await test());
 });
 
 const signIn = async (firstName: string, lastName: string, password: string): Promise<boolean> => {
     const userModel = new UserModel();
-    const user: SQL = await userModel.getByName(firstName, lastName);
-    const hashedPassword = user.rows[0]['password'];
+    const user: any = await userModel.getByName(firstName, lastName);
+    const rows = user.rows;
+    const curUser: User = rows.pop();
+    const hashedPassword = curUser.password;
     return await bcrypt.compare(password, hashedPassword);
+}
+
+const test = (): unknown => {
+    // let res;
+    try {
+        const userModel = new UserModel();
+        // console.log(userModel.getAll());
+        return userModel.getAll();
+        // return 'x';
+    } catch (error) {
+        console.log(error);
+    }
 }

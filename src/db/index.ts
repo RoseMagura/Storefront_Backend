@@ -9,30 +9,16 @@ const pool = new Pool({
     host: process.env.PGHOST,
     database: process.env.PGDATABASE,
     password: process.env.PGPASSWORD,
-    port: parseInt(process.env.PGPORT),
+    port: Number(process.env.PGPORT),
 });
 
-// export default {
-//     // query: (text: string, params: string[], callback: any) => {
-//     //     const start = Date.now();
-//     //     return pool.query(text, params, (err, res) => {
-//     //         const duration = Date.now() - start;
-//     //         if(res !== undefined) {            
-//     //             console.log(`executed query`, {
-//     //                 text,
-//     //                 duration,
-//     //                 rows: res.rowCount,
-//     //             });
-//     //             return res;
-//     //     }
-//     //         callback(err, res);
-//     //     });
-//     // },
-// };
-export const query = (statement: string) => {
+// This function could return either a response
+// from the database, or an error, so it needs
+// to use any
+export const query = (statement: string): any => {
     try {
         return pool.query(statement);
-    } catch (error) {
-        return error
+    } catch (error: unknown) {
+        console.log(error);
     }
 }

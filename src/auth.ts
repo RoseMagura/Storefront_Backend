@@ -5,7 +5,7 @@ export const checkToken = (token: string): string => {
         return '401: This endpoint requires JWT. Please login';
     } else {
         try {
-            jwt.verify(token, process.env.JWTKEY);
+            jwt.verify(token, String(process.env.JWTKEY));
             } catch (error) {
                 if (error instanceof jwt.JsonWebTokenError) {
                     return '401: Token is unauthorized';

@@ -1,10 +1,10 @@
 import { query } from '../db/index';
-import { SQL } from '../routes/products';
+import { SQL } from '../interfaces/SQL';
 
 export class ProductModel {
-    id: number;
-    name: string;
-    price: number;
+    // id: number;
+    // name: string;
+    // price: number;
 
     getAll(): object | unknown {
         try {

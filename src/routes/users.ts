@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from "express";
 import { UserModel } from '../models/UserModel';
-import { SQL } from './products';
+import { SQL } from '../interfaces/SQL';
 import { checkToken } from '../auth';
 
 const router = express.Router();
@@ -25,7 +25,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
     const tokenStatus = checkToken(req.cookies.token);
     if(tokenStatus == 'Success') {
         try {
-            const dbRes: SQL = await userModel.getById(id);
+            const dbRes: any = await userModel.getById(id);
             dbRes.rowCount === 0
                 ? res.send('User not found')
                 : res.send(dbRes.rows);
@@ -42,7 +42,7 @@ router.post('', async (req: Request, res: Response): Promise<void> => {
     const tokenStatus = checkToken(req.cookies.token);
     if(tokenStatus == 'Success') {
         try {
-            const dbRes: SQL = await userModel.create(firstName, lastName, password);
+            const dbRes: any = await userModel.create(firstName, lastName, password);
             dbRes.rowCount === 1 
                 ? res.send(`Sucessfully created User ${firstName} ${lastName}`)
                 : res.send(`Error creating User ${firstName} ${lastName}`);
