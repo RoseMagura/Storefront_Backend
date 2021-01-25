@@ -24,7 +24,7 @@ exports.up = function(db, callback) {
               table: 'orders',
               rules: {
                   onDelete: 'CASCADE',
-                  onUpdate: 'RESTRICT'
+                  onUpdate: 'CASCADE'
               },
               mapping: 'order_id'
           }
@@ -37,7 +37,7 @@ exports.up = function(db, callback) {
             table: 'products',
             rules: {
                 onDelete: 'CASCADE',
-                onUpdate: 'RESTRICT'
+                onUpdate: 'CASCADE'
             },
             mapping: 'product_id'
         }
