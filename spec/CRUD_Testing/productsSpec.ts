@@ -24,7 +24,6 @@ beforeAll(async () => {
 describe('Get all products test', () => {
     it('checks that select all works', async () => {
         const dbRes: any = await mockProductModel.getAll();
-        expect(dbRes.length).toBeGreaterThan(0);
         expect(dbRes).not.toBeNull();
         for (let i = 0; i < data.length; i++) {
             expect(dbRes[i].name).toBe(data[i].name);
@@ -45,7 +44,7 @@ describe('Get one product test', () => {
 
 describe('Post a product test', () => {
     it('checks that a product can be created', async () => {
-        const res = await mockProductModel.create('rice', 5);
+        const res: SQL = await mockProductModel.create('rice', 5);
         expect(res.command).toBe('INSERT');
         expect(res.rowCount).toBe(1);
         const all = await mockProductModel.getAll();
