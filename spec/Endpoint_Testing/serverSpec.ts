@@ -1,10 +1,10 @@
 import { getUser } from '../CRUD_Testing/ordersSpec';
-import * as request from 'request';
-import * as bcrypt from 'bcrypt';
 import { query } from '../../src/db';
 import { UserModel } from '../../src/models/UserModel';
 // import { Request, Response } from 'express';
 import * as http from 'http';
+import { checkToken } from '../../src/auth';
+import * as cookieParser from 'cookie-parser';
 
 // Server needs to be running at this URL
 // Can be run with `yarn watch` in the root directory
@@ -20,46 +20,52 @@ const getRealUser = async () => {
 };
 
 describe('Checking root endpoint (GET)', () => {
-    fit('Returns a helpful message', () => {
+    it('Returns a helpful message', () => {
         http.get(baseUrl, (res) => {
             expect(res.statusCode).toBe(200);
             res.setEncoding('ascii');
-            res.on('data', (chunk) => (expect(chunk).toBe('Please Login.')));
+            res.on('data', (chunk) => expect(chunk).toBe('Please Login.'));
         });
     });
 });
 
-// describe('Checking root endpoint (POST)', () => {
-//     fit('Returns JWT in the cookie after logging in', async () => {
-//         const user = await getRealUser();
-//         console.log(user.first_name);
-//         const options = {
-//             method: 'POST',
-//             uri: baseUrl,
-//             // body: {'firstName': user.first_name}
-//             multipart: [
-//                 {
-//                     'content-type': 'application/json',
-//                     'body': JSON.stringify({
-//                         'firstName': user.first_name,
-//                         'lastName': user.last_name,
-//                         'password': user.password,
-//                     }),
-//                 },
-//             ],
-//         };
-//         request.post(options, (err, res, body) => {
-//             if (err) {
-//                 // fail(err);
-//                 console.log(err);
-//                 console.log(body);
-//             }
-//             // console.log(res.headers['set-cookie']);
-//             // console.log(body);
-//             console.log(res);
-//             // expect(res.statusCode).toBe(200);
-//             // expect(res.headers['set-cookie']).not.toBeNull;
-//             // expect(body).toBe(`succesfully logged in!`);
-//         });
-//     });
-// });
+describe('Checking root endpoint (POST)', () => {
+    fit('Returns JWT in the cookie after logging in', async () => {
+        const user = await getRealUser();
+        const postData = JSON.stringify({
+            'firstName': user.first_name,
+            'lastName': user.last_name,
+            'password': user.password
+        });
+
+        const options = {
+            host: '0.0.0.0',
+            port: '3000',
+            path: '/',
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+            }
+        };
+        
+        const postReq = http.request(options, (res) => {
+            expect(res.statusCode).toBe(200);
+            if (res.headers['set-cookie'] !== undefined){
+                const cookie: string = res.headers['set-cookie'][0];
+                expect(checkToken(cookie)).toBeTrue;
+            } else {
+                fail('NO COOKIE');
+            }
+            res.setEncoding('ascii');
+            res.on('data', (chunk) => expect(chunk).toBe(`${user.first_name} ${user.last_name} successfully logged in!`));
+        });
+
+        postReq.on('error', (e) => {
+            console.error(`problem with request: ${e.message}`);
+          });
+
+        postReq.write(postData);
+        postReq.end();
+        //     // expect(res.headers['set-cookie']).not.toBeNull;
+    });
+});
