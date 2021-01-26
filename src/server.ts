@@ -15,7 +15,7 @@ const address: string = '0.0.0.0:3000';
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({origin: address}));
+app.use(cors({ origin: address }));
 
 // initDB();
 
@@ -34,28 +34,34 @@ app.post('/', (req: Request, res: Response): void => {
     const { firstName, lastName, password } = req.body;
     const auth = signIn(firstName, lastName, password);
     const token = jwt.sign({ lastName }, String(jwtKey), {
-        algorithm: "HS256",
-        expiresIn: 600
+        algorithm: 'HS256',
+        expiresIn: 600,
     });
 
-    if(auth){
-        res.cookie('token', token, {maxAge: 600000});
+    if (auth) {
+        res.cookie('token', token, { maxAge: 600000 });
         res.send(`${firstName} ${lastName} successfully logged in!`);
     } else {
         res.send('Unsuccessful login');
     }
 });
 
-app.listen(3000, async (): Promise<void> => {
-    console.log(`starting app on: ${address}`);
-    // console.log('testing', await test());
-});
+app.listen(
+    3000,
+    async (): Promise<void> => {
+        console.log(`starting app on: ${address}`);
+    }
+);
 
-const signIn = async (firstName: string, lastName: string, password: string): Promise<boolean> => {
+const signIn = async (
+    firstName: string,
+    lastName: string,
+    password: string
+): Promise<boolean> => {
     const userModel = new UserModel();
     const user: any = await userModel.getByName(firstName, lastName);
     const rows = user.rows;
     const curUser: User = rows.pop();
     const hashedPassword = curUser.password;
     return await bcrypt.compare(password, hashedPassword);
-}
+};

@@ -2,10 +2,11 @@ import { testQuery } from '../../../src/db/index';
 import { SQL } from '../../../src/interfaces/SQL';
 
 export class MockOrderModel {
-
     getAll(): any {
         try {
-            return testQuery('SELECT * FROM ORDERS').then((res: SQL) => res.rows);
+            return testQuery('SELECT * FROM ORDERS').then(
+                (res: SQL) => res.rows
+            );
         } catch (error: unknown) {
             return error;
         }

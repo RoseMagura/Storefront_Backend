@@ -2,10 +2,11 @@ import { testQuery } from '../../../src/db/index';
 import { SQL } from '../../../src/interfaces/SQL';
 
 export class MockProductModel {
-
     getAll(): any {
         try {
-            return testQuery('SELECT * FROM PRODUCTS').then((res: SQL) => res.rows);
+            return testQuery('SELECT * FROM PRODUCTS').then(
+                (res: SQL) => res.rows
+            );
         } catch (error: unknown) {
             return error;
         }

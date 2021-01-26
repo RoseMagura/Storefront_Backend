@@ -1,12 +1,13 @@
-import { testQuery } from "../../../src/db";
-import { SQL } from "../../../src/interfaces/SQL";
+import { testQuery } from '../../../src/db';
+import { SQL } from '../../../src/interfaces/SQL';
 import * as bcrypt from 'bcrypt';
 
 export class MockUserModel {
-
     getAll(): any {
         try {
-            return testQuery('SELECT * FROM USERS').then((res: SQL) => res.rows);
+            return testQuery('SELECT * FROM USERS').then(
+                (res: SQL) => res.rows
+            );
         } catch (error: unknown) {
             return error;
         }
@@ -22,13 +23,19 @@ export class MockUserModel {
 
     getByName(firstName: string, lastName: string): any {
         try {
-            return testQuery(`SELECT * FROM USERS WHERE first_name=\'${firstName}\' and last_name=\'${lastName}\'`);
+            return testQuery(
+                `SELECT * FROM USERS WHERE first_name=\'${firstName}\' and last_name=\'${lastName}\'`
+            );
         } catch (error: unknown) {
             return error;
         }
     }
 
-    async create(firstName: string, lastName: string, password: string): Promise<any> {
+    async create(
+        firstName: string,
+        lastName: string,
+        password: string
+    ): Promise<any> {
         try {
             const hashVal = await bcrypt.hash(password, 10);
             return testQuery(
