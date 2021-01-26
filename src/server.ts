@@ -59,15 +59,3 @@ const signIn = async (firstName: string, lastName: string, password: string): Pr
     const hashedPassword = curUser.password;
     return await bcrypt.compare(password, hashedPassword);
 }
-
-const test = (): unknown => {
-    // let res;
-    try {
-        const userModel = new UserModel();
-        // console.log(userModel.getAll());
-        return userModel.getAll();
-        // return 'x';
-    } catch (error) {
-        console.log(error);
-    }
-}
