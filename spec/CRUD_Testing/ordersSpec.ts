@@ -8,7 +8,7 @@ import { MockUserModel } from './Mock_Models/MockUserModel';
 const mockOrderModel = new MockOrderModel();
 const mockUserModel = new MockUserModel();
 
-const getUser = async () => {
+export const getUser = async () => {
     const users = await testQuery('SELECT * FROM USERS;');
     if (users.rowCount === 0) {
         await mockUserModel.create('Customer', 'One', 'securePassword');

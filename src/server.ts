@@ -31,19 +31,21 @@ app.get('/', (req: Request, res: Response): void => {
 
 app.post('/', (req: Request, res: Response): void => {
     const jwtKey = process.env.JWTKEY;
+    console.log(req);
     const { firstName, lastName, password } = req.body;
-    const auth = signIn(firstName, lastName, password);
-    const token = jwt.sign({ lastName }, String(jwtKey), {
-        algorithm: 'HS256',
-        expiresIn: 600,
-    });
+    
+    // const auth = signIn(firstName, lastName, password);
+    // const token = jwt.sign({ lastName }, String(jwtKey), {
+    //     algorithm: 'HS256',
+    //     expiresIn: 600,
+    // });
 
-    if (auth) {
-        res.cookie('token', token, { maxAge: 600000 });
-        res.send(`${firstName} ${lastName} successfully logged in!`);
-    } else {
-        res.send('Unsuccessful login');
-    }
+    // if (auth) {
+    //     res.cookie('token', token, { maxAge: 600000 });
+    //     res.send(`${firstName} ${lastName} successfully logged in!`);
+    // } else {
+    //     res.send('Unsuccessful login');
+    // }
 });
 
 app.listen(
