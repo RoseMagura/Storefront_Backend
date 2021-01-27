@@ -9,6 +9,9 @@ import * as jwt from 'jsonwebtoken';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { User } from './interfaces/User';
+import { checkToken } from './auth';
+import * as http from 'http';
+import { query } from './db';
 
 export const app: express.Application = express();
 const address: string = '0.0.0.0:3000';
@@ -45,6 +48,15 @@ app.post('/', (req: Request, res: Response): void => {
         res.send('Unsuccessful login');
     }
 });
+
+const getRealUser = async () => {
+    const users = await query('SELECT * FROM USERS;');
+    if (users.rowCount === 0) {
+        const userModel = new UserModel();
+        await userModel.create('Customer', 'One', 'securePassword');
+    }
+    return users.rows[0];
+};
 
 app.listen(
     3000,

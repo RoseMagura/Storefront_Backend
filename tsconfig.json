@@ -9,13 +9,12 @@
     "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
     "skipLibCheck": true,                     /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
-    "noImplicitAny": true
+    "noImplicitAny": true,
   },
   "exclude": [
       "./dist/**/*",
       "migrations",
       "node_modules",
       "spec",
-
   ]
 }
