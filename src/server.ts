@@ -9,9 +9,8 @@ import * as jwt from 'jsonwebtoken';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { User } from './interfaces/User';
-import { checkToken } from './auth';
-import * as http from 'http';
 import { query } from './db';
+import * as http from 'http';
 
 export const app: express.Application = express();
 const address: string = '0.0.0.0:3000';

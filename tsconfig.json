@@ -15,6 +15,6 @@
       "./dist/**/*",
       "migrations",
       "node_modules",
-      "spec",
+      "spec/**/*",
   ]
 }

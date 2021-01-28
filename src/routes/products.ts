@@ -21,6 +21,7 @@ const getSQL = async (id: number ): Promise<SQL | null> => {
 
 router.get('', async (req: Request, res: Response): Promise<void> => {
     try {
+        console.log('ACCESSING PRODUCTS');
         res.send(await productModel.getAll());
     } catch (error: unknown) {
         res.send(error);
