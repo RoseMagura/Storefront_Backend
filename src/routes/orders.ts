@@ -8,9 +8,10 @@ const router = express.Router();
 const orderModel = new OrderModel();
 
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
-    const tokenStatus: string = checkToken(req.cookies.token);
+    const tokenStatus: object = checkToken(req.cookies.token);
+
     const id: number = parseInt(req.params.id);
-    if(tokenStatus == 'Success') {
+    if(Object.keys(tokenStatus)[0] == '200') {
         try {
             const dbRes: any = await orderModel.getByUserId(id);
             dbRes.rowCount === 0
@@ -20,7 +21,8 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
             res.send(error);
         }
     } else {
-        res.send(tokenStatus);
+        res.status(parseInt(Object.keys(tokenStatus)[0]));
+        res.send(Object.values(tokenStatus)[0]);
     }
 });
 

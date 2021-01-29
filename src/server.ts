@@ -59,17 +59,8 @@ const getRealUser = async () => {
 
 app.listen(
     3000,
-    (): void => {
+    async (): Promise<any> => {
         console.log(`starting app on: ${address}`);
-        const req = http.get('http://localhost:3000/products/', (res: any) => {
-            // console.log(res);
-            res.setEncoding('utf8');
-            res.on('data', (chunk: string) => console.log(chunk))
-            // expect(res.statusCode).toBe(200);
-            // expect(res.)
-            res.on('error', (e: unknown) => fail(e));
-        });
-        req.on('error', (e: unknown) => console.error(e));
     }
 );
 

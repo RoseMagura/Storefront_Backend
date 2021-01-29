@@ -1,6 +1,7 @@
 import * as http from 'http';
+import { getRealUser } from './serverSpec';
 
-export const logIn = async (firstName: string, lastName: string, password: string) => {
+export const logIn = async (firstName: string, lastName: string, password: string): Promise<any> => {
     const postData = JSON.stringify({
         firstName,
         lastName,
@@ -24,9 +25,7 @@ export const logIn = async (firstName: string, lastName: string, password: strin
                 res.on('data', () => {
                     if (res.headers['set-cookie'] !== undefined) {
                         const cookie: string = res.headers['set-cookie'][0];
-                        const fullToken: string = cookie.split(';')[0];
-                        const justJWT: string = fullToken.split('=')[1];
-                        headers.push(justJWT);
+                        headers.push(cookie);
                     } else {
                         reject('NO COOKIE');
                     }
@@ -42,3 +41,41 @@ export const logIn = async (firstName: string, lastName: string, password: strin
     };
     return await processRequest();
 };
+
+describe('Checking orders (GET)', () => {
+    it('fetches order by user id', async () => {
+        const user = await getRealUser();
+        const { first_name, last_name, password } = user;
+        const token = await logIn(first_name, last_name, password);
+        const options: any = {
+            host: '0.0.0.0',
+            port: '3000',
+            path: `/orders/${user.user_id}`,
+            method: 'GET',
+            headers: {
+                'Cookie': token,
+            },
+        }
+        const req = http.request(options, (res) => {
+            expect(res.statusCode).toBe(200);
+            res.setEncoding('utf-8');
+            res.on('data', (chunk: string) => {
+                expect(chunk.includes('order_id')).toBe(true);
+                expect(chunk.includes('user_id')).toBe(true);
+                expect(chunk.includes('numProducts')).toBe(true);
+                expect(chunk.includes('completed')).toBe(true);
+            });
+        });
+        req.end();
+    });
+
+    it('rejects if no JWT', async () => {
+        const user = await getRealUser();
+        http.get(`http://localhost:3000/orders/${user.user_id}`, (res) => {
+            expect(res.statusCode).toBe(401);
+            res.on('data', (chunk: string) => {
+                expect(chunk).toBe('This endpoint requires JWT. Please login');
+            });
+        });
+    });
+});
