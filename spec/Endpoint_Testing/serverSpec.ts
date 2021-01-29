@@ -1,7 +1,7 @@
 import { getUser } from '../CRUD_Testing/ordersSpec';
 import { query } from '../../src/db';
 import { UserModel } from '../../src/models/UserModel';
-// import { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import * as http from 'http';
 import { checkToken } from '../../src/auth';
 
