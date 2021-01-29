@@ -44,18 +44,19 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
 router.post('', async (req: Request, res: Response): Promise<void> => {
     const { name, price } = req.body;
     const tokenStatus = checkToken(req.cookies.token);
-    // if(tokenStatus == 'Success') {
-    //     try {
-    //         const dbRes: any = await productModel.create(name, price);
-    //         dbRes.rowCount === 1 
-    //         ? res.send(`Sucessfully created ${name}`)
-    //         : res.send(`Error creating ${name}`);
-    //     } catch (error: unknown) {
-    //         res.send(error);
-    //     }
-    // } else {
-    //     res.send(tokenStatus);
-    // }
+    if(Object.keys(tokenStatus)[0] == '200') {
+        try {
+            const dbRes: any = await productModel.create(name, price);
+            dbRes.rowCount === 1 
+            ? res.send(`Sucessfully created ${name}`)
+            : res.send(`Error creating ${name}`);
+        } catch (error: unknown) {
+            res.send(error);
+        }
+    } else {
+        res.status(parseInt(Object.keys(tokenStatus)[0]));
+        res.send(Object.values(tokenStatus)[0]);
+    }
 });
 
 module.exports = router;

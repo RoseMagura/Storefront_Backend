@@ -59,7 +59,7 @@ const getRealUser = async () => {
 
 app.listen(
     3000,
-    async (): Promise<any> => {
+    async (): Promise<void> => {
         console.log(`starting app on: ${address}`);
     }
 );
@@ -76,3 +76,4 @@ const signIn = async (
     const hashedPassword = curUser.password;
     return await bcrypt.compare(password, hashedPassword);
 };
+ 

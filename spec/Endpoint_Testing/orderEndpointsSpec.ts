@@ -73,6 +73,7 @@ describe('Checking orders (GET)', () => {
         const user = await getRealUser();
         http.get(`http://localhost:3000/orders/${user.user_id}`, (res) => {
             expect(res.statusCode).toBe(401);
+            res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
                 expect(chunk).toBe('This endpoint requires JWT. Please login');
             });
