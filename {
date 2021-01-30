@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: 0.0.0.0:3000
+Vary: Origin
+Set-Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MTE5Nzg2NDMsImV4cCI6MTYxMTk3OTI0M30.GfK-a_o4UfIOHwoUNVrnKL4xshWnNGmozthwAbFt5uY; Max-Age=600; Path=/; Expires=Sat, 30 Jan 2021 04:00:43 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 43
+ETag: W/"2b-JcklVD6kLQ+23xNOHqEX7KyIPy4"
+Date: Sat, 30 Jan 2021 03:50:43 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+

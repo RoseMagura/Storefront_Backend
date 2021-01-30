@@ -12,12 +12,12 @@ These are the notes from a meeting with the frontend developer that describe wha
 - [OPTIONAL] Products by category (args: product category)
 
 #### Users
-- Index [token required]
-- Show (args: id)[token required]
-- Create (args: User)[token required]
+- Index [token required] /users
+- Show (args: id)[token required] /users:id
+- Create (args: User)[token required] /users with body of {"firstName": "x", "lastName": "y", "password": "z"}
 
 #### Orders
-- Current Order by user (args: user id)[token required]
+- Current Order by user (args: user id)[token required] /orders/:userId
 - [OPTIONAL] Completed Orders by user (args: user id)[token required]
 
 ## Data Shapes
@@ -40,3 +40,10 @@ These are the notes from a meeting with the frontend developer that describe wha
 - user_id
 - status of order (active or complete)
 
+There is one table each for products, users, and orders. The many-to-many
+relationship between orders and products is shown through the
+order_products join table, which references order_id and product_id as
+foreign keys. 
+
+The one-to-many relationship between user and orders is shown with a 
+foreign key column for user_id in the orders table.
