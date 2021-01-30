@@ -1,6 +1,17 @@
 import * as http from 'http';
 import { getRealUser } from './serverSpec';
 import { logIn } from './orderEndpointsSpec';
+import { query } from '../../src/db';
+import { UserModel } from '../../src/models/UserModel';
+
+// In case users is empty
+beforeAll( async () => {
+    const users = await query('SELECT * FROM USERS;');
+    if (users.rowCount == 0) {
+        const userModel = new UserModel();
+        await userModel.create('User', 'One', '??3adxeurd');
+    }
+});
 
 describe('Test getting a user', () => {
     it('requires JWT', () => {

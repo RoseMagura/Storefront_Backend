@@ -1,5 +1,7 @@
 import * as http from 'http';
 import { getRealUser } from './serverSpec';
+import { query } from '../../src/db/index';
+import { UserModel } from '../../src/models/UserModel';
 
 export const logIn = async (firstName: string, lastName: string, password: string): Promise<any> => {
     const postData = JSON.stringify({
@@ -41,6 +43,22 @@ export const logIn = async (firstName: string, lastName: string, password: strin
     };
     return await processRequest();
 };
+
+// In case orders and/or users is empty
+beforeAll( async () => {
+    const orders = await query('SELECT * FROM ORDERS;');
+    let users = await query('SELECT * FROM USERS;');
+    const userModel = new UserModel();
+    if (users.rowCount == 0) {
+        await userModel.create('User', 'One', '??3adxeurd');
+    }
+    if (orders.rowCount == 0) {
+        // Rerun in case users was empty before and has been updated 
+        users = await query('SELECT * FROM USERS;');
+        const user = users[0];
+        await query(`INSERT INTO ORDERS (order_id, "numProducts", user_id, completed) VALUES (1, 1, ${user.user_id}, true);`);
+    }
+});
 
 describe('Checking orders (GET)', () => {
     it('fetches order by user id', async () => {
