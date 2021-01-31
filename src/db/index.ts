@@ -29,7 +29,7 @@ export const query = (statement: string): any => {
     } catch (error: unknown) {
         console.log(error);
     }
-}
+};
 
 export const testQuery = (statement: string): any => {
     try {
@@ -37,4 +37,4 @@ export const testQuery = (statement: string): any => {
     } catch (error: unknown) {
         console.log(error);
     }
-}
+};

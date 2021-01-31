@@ -23,7 +23,7 @@ export class MockProductModel {
     create(name: string, price: number): any {
         try {
             return testQuery(
-                `INSERT INTO products (name, price) VALUES (\'${name}\', ${price})`
+                `INSERT INTO products (name, price) VALUES ('${name}', ${price})`
             );
         } catch (error: unknown) {
             return error;

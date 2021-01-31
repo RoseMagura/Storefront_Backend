@@ -1,7 +1,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import * as bodyParser from 'body-parser';
-import { initDB } from './db/init';
 import * as bcrypt from 'bcrypt';
 import { UserModel } from './models/UserModel';
 import { SQL } from './interfaces/SQL';
@@ -9,11 +8,9 @@ import * as jwt from 'jsonwebtoken';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { User } from './interfaces/User';
-import { query } from './db';
-import * as http from 'http';
 
 export const app: express.Application = express();
-const address: string = '0.0.0.0:3000';
+const address = '0.0.0.0:3000';
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -48,15 +45,6 @@ app.post('/', (req: Request, res: Response): void => {
     }
 });
 
-const getRealUser = async () => {
-    const users = await query('SELECT * FROM USERS;');
-    if (users.rowCount === 0) {
-        const userModel = new UserModel();
-        await userModel.create('Customer', 'One', 'securePassword');
-    }
-    return users.rows[0];
-};
-
 app.listen(
     3000,
     async (): Promise<void> => {
@@ -70,10 +58,9 @@ const signIn = async (
     password: string
 ): Promise<boolean> => {
     const userModel = new UserModel();
-    const user: any = await userModel.getByName(firstName, lastName);
+    const user: SQL = userModel.getByName(firstName, lastName);
     const rows = user.rows;
-    const curUser: User = rows.pop();
+    const curUser: User = rows!== undefined && rows.pop();
     const hashedPassword = curUser.password;
     return await bcrypt.compare(password, hashedPassword);
 };
- 

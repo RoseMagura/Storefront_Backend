@@ -2,7 +2,9 @@
   "scripts": {
     "watch": "tsc-watch --onSuccess \"node ./dist/server.js\"",
     "test": "jasmine-ts --config=jasmine.json",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "lint": "eslint . --ext .ts",
+    "prettier": "npx prettier --check \"src/**/*.{js,ts}\""
   },
   "license": "MIT",
   "dependencies": {
@@ -32,6 +34,9 @@
     "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^14.14.21",
     "@types/pg": "^7.14.8",
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "4.0.0",
+    "eslint": "^7.18.0",
     "tsc-watch": "^4.2.9",
     "tsconfig-paths": "^3.9.0"
   }

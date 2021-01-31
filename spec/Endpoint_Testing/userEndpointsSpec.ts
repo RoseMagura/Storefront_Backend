@@ -5,7 +5,7 @@ import { query } from '../../src/db';
 import { UserModel } from '../../src/models/UserModel';
 
 // In case users is empty
-beforeAll( async () => {
+beforeAll(async () => {
     const users = await query('SELECT * FROM USERS;');
     if (users.rowCount == 0) {
         const userModel = new UserModel();
@@ -20,7 +20,7 @@ describe('Test getting a user', () => {
             port: '3000',
             path: `/users`,
             method: 'GET',
-        }
+        };
         const req = http.request(options, (res) => {
             expect(res.statusCode).toBe(401);
             res.setEncoding('utf-8');
@@ -40,9 +40,9 @@ describe('Test getting a user', () => {
             path: `/users/${user.user_id}`,
             method: 'GET',
             headers: {
-                'Cookie': jwt,
+                Cookie: jwt,
             },
-        }
+        };
         const req = http.request(options, (res) => {
             expect(res.statusCode).toBe(200);
             res.setEncoding('utf-8');
@@ -52,11 +52,10 @@ describe('Test getting a user', () => {
                 expect(chunk.includes('last_name')).toBe(true);
                 expect(chunk.includes('password')).toBe(true);
                 const allParts = chunk.split(',');
-                let arr: string[] = [];
-                allParts.forEach(
-                    (item) => {
-                        arr.push(item.split(':')[1].replace('}]', ''));
-                    });
+                const arr: string[] = [];
+                allParts.forEach((item) => {
+                    arr.push(item.split(':')[1].replace('}]', ''));
+                });
                 expect(arr[0]).toBe(user.user_id);
                 expect(arr[1]).toBe(user.first_name);
                 expect(arr[2]).toBe(user.last_name);
@@ -77,8 +76,12 @@ describe('Test posting a user', () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-        }
-        const data = JSON.stringify({firstName: 'Test', lastName: 'User', password: '45test0~%pwd'});
+        };
+        const data = JSON.stringify({
+            firstName: 'Test',
+            lastName: 'User',
+            password: '45test0~%pwd',
+        });
         const req = http.request(options, (res) => {
             expect(res.statusCode).toBe(401);
             res.setEncoding('utf-8');
@@ -92,7 +95,11 @@ describe('Test posting a user', () => {
 
     it('posts user with a valid JWT succesfully', async () => {
         const user = await getRealUser();
-        const token = await logIn(user.first_name, user.last_name, user.password);
+        const token = await logIn(
+            user.first_name,
+            user.last_name,
+            user.password
+        );
         const options: any = {
             host: '0.0.0.0',
             port: '3000',
@@ -100,10 +107,14 @@ describe('Test posting a user', () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Cookie': token
+                Cookie: token,
             },
-        }
-        const data = JSON.stringify({firstName: 'Test', lastName: 'User', password: '45test0~%pwd'});
+        };
+        const data = JSON.stringify({
+            firstName: 'Test',
+            lastName: 'User',
+            password: '45test0~%pwd',
+        });
         const req = http.request(options, (res) => {
             expect(res.statusCode).toBe(200);
             res.setEncoding('utf-8');
@@ -114,7 +125,4 @@ describe('Test posting a user', () => {
         req.write(data);
         req.end();
     });
-
 });
-
-

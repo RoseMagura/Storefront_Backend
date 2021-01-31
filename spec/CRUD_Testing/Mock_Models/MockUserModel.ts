@@ -24,7 +24,7 @@ export class MockUserModel {
     getByName(firstName: string, lastName: string): any {
         try {
             return testQuery(
-                `SELECT * FROM USERS WHERE first_name=\'${firstName}\' and last_name=\'${lastName}\'`
+                `SELECT * FROM USERS WHERE first_name='${firstName}' and last_name='${lastName}'`
             );
         } catch (error: unknown) {
             return error;
@@ -39,7 +39,7 @@ export class MockUserModel {
         try {
             const hashVal = await bcrypt.hash(password, 10);
             return testQuery(
-                `INSERT INTO USERS (first_name, last_name, password) VALUES (\'${firstName}\', \'${lastName}\', \'${hashVal}\');`
+                `INSERT INTO USERS (first_name, last_name, password) VALUES ('${firstName}', '${lastName}', '${hashVal}');`
             );
         } catch (error: unknown) {
             return error;

@@ -2,9 +2,6 @@ import { query } from '../db/index';
 import { SQL } from '../interfaces/SQL';
 
 export class ProductModel {
-    // id: number;
-    // name: string;
-    // price: number;
 
     getAll(): object | unknown {
         try {
@@ -25,7 +22,7 @@ export class ProductModel {
     create(name: string, price: number): SQL | unknown {
         try {
             return query(
-                `INSERT INTO products (name, price) VALUES (\'${name}\', ${price})`
+                `INSERT INTO products (name, price) VALUES ('${name}', ${price})`
             );
         } catch (error: unknown) {
             return error;
