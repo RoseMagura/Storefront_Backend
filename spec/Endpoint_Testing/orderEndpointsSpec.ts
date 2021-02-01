@@ -69,8 +69,8 @@ beforeAll(async () => {
 describe('Checking orders (GET)', () => {
     it('fetches order by user id', async () => {
         const user = await getRealUser();
-        const { first_name, last_name, password } = user;
-        const token = await logIn(first_name, last_name, password);
+        const { firstName, lastName, password } = user;
+        const token = await logIn(firstName, lastName, password);
         const options: any = {
             host: '0.0.0.0',
             port: '3000',

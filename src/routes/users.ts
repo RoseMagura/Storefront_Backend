@@ -21,15 +21,15 @@ router.get(
     '',
     async (req: Request, res: Response): Promise<void> => {
         const tokenStatus = checkToken(req.cookies.token);
-        if (Object.keys(tokenStatus)[0] == '200') {
+        if (tokenStatus.code == 200) {
             try {
                 res.send(await userModel.getAll());
             } catch (error: unknown) {
                 res.send(error);
             }
         } else {
-            res.status(parseInt(Object.keys(tokenStatus)[0]));
-            res.send(Object.values(tokenStatus)[0]);
+            res.status(tokenStatus.code);
+            res.send(tokenStatus.message);
         }
     }
 );
@@ -39,7 +39,7 @@ router.get(
     async (req: Request, res: Response): Promise<void> => {
         const id = parseInt(req.params.id);
         const tokenStatus = checkToken(req.cookies.token);
-        if (Object.keys(tokenStatus)[0] == '200') {
+        if (tokenStatus.code == 200) {
             try {
                 // const dbRes: any = await userModel.getById(id);
                 const dbRes = await getSQL(id);
@@ -52,8 +52,8 @@ router.get(
                 res.send(error);
             }
         } else {
-            res.status(parseInt(Object.keys(tokenStatus)[0]));
-            res.send(Object.values(tokenStatus)[0]);
+            res.status(tokenStatus.code);
+            res.send(tokenStatus.message);
         }
     }
 );
@@ -63,7 +63,7 @@ router.post(
     async (req: Request, res: Response): Promise<void> => {
         const { firstName, lastName, password } = req.body;
         const tokenStatus = checkToken(req.cookies.token);
-        if (Object.keys(tokenStatus)[0] == '200') {
+        if (tokenStatus.code == 200) {
             try {
                 const dbRes: any = await userModel.create(
                     firstName,
@@ -79,8 +79,8 @@ router.post(
                 res.send(error);
             }
         } else {
-            res.status(parseInt(Object.keys(tokenStatus)[0]));
-            res.send(Object.values(tokenStatus)[0]);
+            res.status(tokenStatus.code);
+            res.send(tokenStatus.message);
         }
     }
 );

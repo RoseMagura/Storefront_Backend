@@ -2,13 +2,14 @@ import 'jasmine';
 import { testQuery } from '../../src/db/index';
 import { Order } from '../../src/interfaces/Order';
 import { SQL } from '../../src/interfaces/SQL';
+import { User } from '../../src/interfaces/User';
 import { MockOrderModel } from './Mock_Models/MockOrderModel';
 import { MockUserModel } from './Mock_Models/MockUserModel';
 
 const mockOrderModel = new MockOrderModel();
 const mockUserModel = new MockUserModel();
 
-export const getUser = async () => {
+export const getUser = async (): Promise<User> => {
     const users = await testQuery('SELECT * FROM USERS;');
     if (users.rowCount === 0) {
         await mockUserModel.create('Customer', 'One', 'securePassword');
@@ -34,7 +35,7 @@ describe('Get all orders test', () => {
         const firstOrder: Order = dbRes[0];
         expect(firstOrder.order_id).toBe(1);
         expect(firstOrder.numProducts).toBe(2);
-        expect(firstOrder.user_id).toBe(user.user_id);
+        expect(firstOrder.user_id).toBe( user.user_id);
         expect(firstOrder.completed).toBeFalse;
     });
 });

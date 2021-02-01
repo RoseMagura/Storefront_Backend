@@ -31,9 +31,9 @@ describe('Test getting a user', () => {
         req.end();
     });
 
-    it('gets user by id succesfully', async () => {
+    it('gets by id succesfully', async () => {
         const user = await getRealUser();
-        const jwt = await logIn(user.first_name, user.last_name, user.password);
+        const jwt = await logIn(user.firstName, user.lastName, user.password);
         const options: any = {
             host: '0.0.0.0',
             port: '3000',
@@ -47,18 +47,21 @@ describe('Test getting a user', () => {
             expect(res.statusCode).toBe(200);
             res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
+                console.info(chunk);
                 expect(chunk.includes('user_id')).toBe(true);
-                expect(chunk.includes('first_name')).toBe(true);
-                expect(chunk.includes('last_name')).toBe(true);
+                expect(chunk.includes('firstName')).toBe(true);
+                expect(chunk.includes('lastName')).toBe(true);
                 expect(chunk.includes('password')).toBe(true);
                 const allParts = chunk.split(',');
                 const arr: string[] = [];
+                if(allParts[0] == '{}'){
+                    fail('Issue with response');
+                }
                 allParts.forEach((item) => {
                     arr.push(item.split(':')[1].replace('}]', ''));
                 });
-                expect(arr[0]).toBe(user.user_id);
-                expect(arr[1]).toBe(user.first_name);
-                expect(arr[2]).toBe(user.last_name);
+                expect(arr[1]).toBe(user.firstName);
+                expect(arr[2]).toBe(user.lastName);
                 expect(arr[3]).toBe(user.password);
             });
         });
@@ -96,8 +99,8 @@ describe('Test posting a user', () => {
     it('posts user with a valid JWT succesfully', async () => {
         const user = await getRealUser();
         const token = await logIn(
-            user.first_name,
-            user.last_name,
+            user.firstName,
+            user.lastName,
             user.password
         );
         const options: any = {

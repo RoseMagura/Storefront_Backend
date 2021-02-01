@@ -1,18 +1,19 @@
 import * as jwt from 'jsonwebtoken';
+import { HttpCode } from './interfaces/HttpCode';
 
-export const checkToken = (token: string): object => {
+export const checkToken = (token: string): HttpCode => {
     if (token === undefined) {
-        return { 401: 'This endpoint requires JWT. Please login' };
+        return { 'code': 401, 'message': 'This endpoint requires JWT. Please login' };
     } else {
         try {
             jwt.verify(token, String(process.env.JWTKEY));
         } catch (error) {
             if (error instanceof jwt.JsonWebTokenError) {
-                return { 401: 'Token is unauthorized' };
+                return { 'code': 401,'message': 'Token is unauthorized' };
             } else {
-                return { 400: 'Error with request' };
+                return { 'code': 400, 'message': 'Error with request' };
             }
         }
-        return { 200: 'Success' };
+        return { 'code': 200, 'message': 'Success' };
     }
 };

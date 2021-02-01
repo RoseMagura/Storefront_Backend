@@ -1,6 +1,7 @@
 import 'jasmine';
 import { testQuery } from '../../src/db/index';
 import { SQL } from '../../src/interfaces/SQL';
+import { Product } from '../../src/interfaces/Product';
 import { MockProductModel } from './Mock_Models/MockProductModel';
 
 const data = [
@@ -25,22 +26,24 @@ beforeAll(async () => {
 
 describe('Get all products test', () => {
     it('checks that select all works', async () => {
-        const dbRes: any = await mockProductModel.getAll();
-        expect(dbRes).not.toBeNull();
-        for (let i = 0; i < data.length; i++) {
-            expect(dbRes[i].name).toBe(data[i].name);
-            expect(dbRes[i].price).toBe(data[i].price);
-        }
+        const dbRes: Product[] = await mockProductModel.getAll();
+        expect(dbRes).toBeDefined();
+        dbRes.forEach((prod) => {
+            expect(prod.name).toBeDefined();
+            expect(prod.price).toBeDefined();
+            expect(prod.product_id).toBeDefined();
+        })
     });
 });
 
 describe('Get one product test', () => {
     it('checks that selecting by id works', async () => {
-        const all = await mockProductModel.getAll();
+        const all: Product[] = await mockProductModel.getAll();
         const id = all[0].product_id;
         const product = await mockProductModel.getById(id);
-        expect(product.rows[0].name).toBe(data[0].name);
-        expect(product.rows[0].price).toBe(data[0].price);
+        expect(product.rows[0].name).toBeDefined();
+        expect(product.rows[0].price).toBeDefined();
+        expect(product.rows[0].product_id).toBeDefined();
     });
 });
 
@@ -49,10 +52,9 @@ describe('Post a product test', () => {
         const res: SQL = await mockProductModel.create('rice', 5);
         expect(res.command).toBe('INSERT');
         expect(res.rowCount).toBe(1);
-        const all = await mockProductModel.getAll();
-        // new product will be the fourth of the products
-        const newProduct = all[3];
-        expect(newProduct.name).toBe('rice');
-        expect(newProduct.price).toBe('5');
+        const newProduct: SQL = await testQuery(`SELECT * FROM PRODUCTS WHERE NAME='rice';`);
+        if(newProduct.rows !== undefined){
+            expect(newProduct.rows[0].price).toBe('5');
+        }
     });
 });
