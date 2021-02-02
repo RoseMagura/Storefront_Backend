@@ -60,9 +60,8 @@ describe('Post a user test', () => {
         const res: SQL = await mockUserModel.create('X', 'Y', 'Z');
         expect(res.command).toBe('INSERT');
         expect(res.rowCount).toBe(1);
-        const all = await mockUserModel.getAll();
-        // new user will be the third of the users
-        const newUser = all[2];
+        const newUserData: SQL = await mockUserModel.getByName('X', 'Y');
+        const newUser: any = newUserData.rows !== undefined && newUserData.rows[0];
         const passwordCheck = await bcrypt.compare('Z', newUser.password);
         expect(newUser.first_name).toBe('X');
         expect(newUser.last_name).toBe('Y');
