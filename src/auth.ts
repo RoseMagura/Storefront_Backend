@@ -7,7 +7,8 @@ export const checkToken = (token: string): HttpCode => {
     } else {
         try {
             jwt.verify(token, String(process.env.JWTKEY));
-        } catch (error) {
+        } catch (error: unknown) {
+            console.log('error', error);
             if (error instanceof jwt.JsonWebTokenError) {
                 return { 'code': 401,'message': 'Token is unauthorized' };
             } else {

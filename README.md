@@ -30,6 +30,9 @@ The test database can also be initialized this way, passing in an
 argument for the database name. See the [db-migrate documentation](https://db-migrate.readthedocs.io/en/latest/Getting%20Started/usage/)
 for more details.
 
+Check the /schema folder for visual representations of the database
+schema, created with SchemaSpy. 
+
 To run the development server, just use the command `yarn watch` with
 the Node terminal. You can access different endpoints through
 'http://localhost:3000'

@@ -58,9 +58,15 @@ const signIn = async (
     password: string
 ): Promise<boolean> => {
     const userModel = new UserModel();
-    const user: SQL = userModel.getByName(firstName, lastName);
+    const user: SQL = await userModel.getByName(firstName, lastName);
     const rows = user.rows;
-    const curUser: User = rows!== undefined && rows.pop();
+    const curUser: User = rows !== undefined && rows.pop();
     const hashedPassword = curUser.password;
-    return await bcrypt.compare(password, hashedPassword);
+    const authResult = await bcrypt.compare(password, hashedPassword, function (err, res){
+        if (err) {
+            console.error(err);
+        } 
+        return res;
+    });
+    return authResult;
 };

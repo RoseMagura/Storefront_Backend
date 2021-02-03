@@ -25,7 +25,7 @@ export const logIn = async (
     };
 
     const headers: string[] = [];
-    const processRequest = () => {
+    const processRequest = async () => {
         return new Promise((resolve, reject) => {
             const req = http.request(options, (res: any) => {
                 res.on('data', () => {
@@ -45,7 +45,7 @@ export const logIn = async (
             req.end();
         });
     };
-    return await processRequest();
+    return await processRequest().catch(err => console.error(err));
 };
 
 // In case orders and/or users is empty
@@ -68,9 +68,10 @@ beforeAll(async () => {
 
 describe('Checking orders (GET)', () => {
     it('fetches order by user id', async () => {
-        const user = await getRealUser();
-        const { firstName, lastName, password } = user;
-        const token = await logIn(firstName, lastName, password);
+        const user: any = await getRealUser();
+        const { first_name, last_name, password } = user;
+        const token = await logIn(first_name, last_name, password)
+            .catch((err: unknown) => fail(err));
         const options: any = {
             host: '0.0.0.0',
             port: '3000',

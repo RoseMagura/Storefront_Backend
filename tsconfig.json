@@ -16,5 +16,6 @@
       "migrations",
       "node_modules",
       "spec/**/*",
+      "schema"
   ]
 }

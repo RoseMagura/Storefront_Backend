@@ -32,8 +32,8 @@ describe('Test getting a user', () => {
     });
 
     it('gets by id succesfully', async () => {
-        const user = await getRealUser();
-        const jwt = await logIn(user.firstName, user.lastName, user.password);
+        const user: any = await getRealUser();
+        const jwt = await logIn(user.first_name, user.last_name, user.password);
         const options: any = {
             host: '0.0.0.0',
             port: '3000',
@@ -97,10 +97,10 @@ describe('Test posting a user', () => {
     });
 
     it('posts user with a valid JWT succesfully', async () => {
-        const user = await getRealUser();
+        const user: any = await getRealUser();
         const token = await logIn(
-            user.firstName,
-            user.lastName,
+            user.first_name,
+            user.last_name,
             user.password
         );
         const options: any = {
