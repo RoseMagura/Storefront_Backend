@@ -2,12 +2,15 @@ import * as http from 'http';
 import { getRealUser } from './serverSpec';
 import { query } from '../../src/db/index';
 import { UserModel } from '../../src/models/UserModel';
+import { User } from '../../src/interfaces/User';
+
+const origTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 export const logIn = async (
-    firstName: string,
-    lastName: string,
-    password: string
-): Promise<any> => {
+    firstName: string | undefined,
+    lastName: string | undefined,
+    password: string | undefined
+): Promise<unknown> => {
     const postData = JSON.stringify({
         firstName,
         lastName,
@@ -27,7 +30,7 @@ export const logIn = async (
     const headers: string[] = [];
     const processRequest = async () => {
         return new Promise((resolve, reject) => {
-            const req = http.request(options, (res: any) => {
+            const req = http.request(options, (res: http.IncomingMessage) => {
                 res.on('data', () => {
                     if (res.headers['set-cookie'] !== undefined) {
                         const cookie: string = res.headers['set-cookie'][0];
@@ -45,7 +48,7 @@ export const logIn = async (
             req.end();
         });
     };
-    return await processRequest().catch(err => console.error(err));
+    return await processRequest();
 };
 
 // In case orders and/or users is empty
@@ -59,20 +62,22 @@ beforeAll(async () => {
     if (orders.rowCount == 0) {
         // Rerun in case users was empty before and has been updated
         users = await query('SELECT * FROM USERS;');
-        const user = users[0];
+        const user = users.rows[0];
         await query(
             `INSERT INTO ORDERS (order_id, "numProducts", user_id, completed) VALUES (1, 1, ${user.user_id}, true);`
         );
     }
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 });
 
 describe('Checking orders (GET)', () => {
     it('fetches order by user id', async () => {
-        const user: any = await getRealUser();
+        const user: User = await getRealUser();
+        console.log('fetching order for user', user);
         const { first_name, last_name, password } = user;
         const token = await logIn(first_name, last_name, password)
             .catch((err: unknown) => fail(err));
-        const options: any = {
+        const options: object = {
             host: '0.0.0.0',
             port: '3000',
             path: `/orders/${user.user_id}`,
@@ -81,10 +86,11 @@ describe('Checking orders (GET)', () => {
                 Cookie: token,
             },
         };
-        const req = http.request(options, (res) => {
+        const req = http.request(options, (res: http.IncomingMessage) => {
             expect(res.statusCode).toBe(200);
             res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
+                console.info(chunk);
                 expect(chunk.includes('order_id')).toBe(true);
                 expect(chunk.includes('user_id')).toBe(true);
                 expect(chunk.includes('numProducts')).toBe(true);
@@ -95,8 +101,8 @@ describe('Checking orders (GET)', () => {
     });
 
     it('rejects if no JWT', async () => {
-        const user = await getRealUser();
-        http.get(`http://localhost:3000/orders/${user.user_id}`, (res) => {
+        const user: User = await getRealUser();
+        http.get(`http://localhost:3000/orders/${user.user_id}`, (res: http.IncomingMessage) => {
             expect(res.statusCode).toBe(401);
             res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
@@ -105,3 +111,7 @@ describe('Checking orders (GET)', () => {
         });
     });
 });
+
+afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = origTimeout;
+})

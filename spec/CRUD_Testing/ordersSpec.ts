@@ -10,10 +10,11 @@ const mockOrderModel = new MockOrderModel();
 const mockUserModel = new MockUserModel();
 
 export const getUser = async (): Promise<User> => {
-    const users = await testQuery('SELECT * FROM USERS;');
+    let users = await testQuery('SELECT * FROM USERS;');
     if (users.rowCount === 0) {
         await mockUserModel.create('Customer', 'One', 'securePassword');
     }
+    users = await testQuery('SELECT * FROM USERS;')
     return users.rows[0];
 };
 // Before all, check that values are what they should be

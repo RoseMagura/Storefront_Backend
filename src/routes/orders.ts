@@ -18,7 +18,7 @@ router.get(
             try {
                 const dbRes: any = await orderModel.getByUserId(id);
                 dbRes.rowCount === 0
-                    ? res.send('Order not found')
+                    ? res.send(`Order for user ${id} not found`)
                     : res.send(dbRes.rows);
             } catch (error: unknown) {
                 res.send(error);

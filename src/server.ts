@@ -62,7 +62,7 @@ const signIn = async (
     const rows = user.rows;
     const curUser: User = rows !== undefined && rows.pop();
     const hashedPassword = curUser.password;
-    const authResult = await bcrypt.compare(password, hashedPassword, function (err, res){
+    const authResult = await bcrypt.compare(password, hashedPassword, (err, res) => {
         if (err) {
             console.error(err);
         } 

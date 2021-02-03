@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { testQuery } from '../../src/db/index';
 import { SQL } from '../../src/interfaces/SQL';
 import { MockUserModel } from './Mock_Models/MockUserModel';
+import { User } from '../../src/interfaces/User';
 
 const mockUserModel = new MockUserModel();
 
@@ -32,25 +33,30 @@ beforeAll(async () => {
 describe('Get all users test', () => {
     it('checks that select all works', async () => {
         const dbRes: any = await mockUserModel.getAll();
-        const matching: boolean = await bcrypt.compare('C', dbRes[0].password);
         expect(dbRes).not.toBeNull();
-        expect(dbRes[0].first_name).toBe('A');
-        expect(dbRes[0].last_name).toBe('B');
-        expect(matching).toBeTrue;
+        dbRes.forEach((element: User) => {
+            expect(element.user_id).toBeDefined();
+            expect(element.first_name).toBeDefined();
+            expect(typeof element.first_name).toBeInstanceOf(String);
+            expect(element.last_name).toBeDefined();
+            expect(typeof element.last_name).toBeInstanceOf(String);
+            expect(element.password).toBeDefined();
+            expect(typeof element.password).toBeInstanceOf(String);
+        });
     });
 });
 
 describe('Get one user test', () => {
     it('checks that selecting by id works', async () => {
         const all = await mockUserModel.getAll();
-        const id = all[1].user_id;
+        const id = all[0].user_id;
         const user = await mockUserModel.getById(id);
         const passwordAuth: boolean = await bcrypt.compare(
-            'F',
+            all[0].password,
             user.rows[0].password
         );
-        expect(user.rows[0].first_name).toBe(all[1].first_name);
-        expect(user.rows[0].last_name).toBe(all[1].last_name);
+        expect(user.rows[0].first_name).toBe(all[0].first_name);
+        expect(user.rows[0].last_name).toBe(all[0].last_name);
         expect(passwordAuth).toBeTrue;
     });
 });

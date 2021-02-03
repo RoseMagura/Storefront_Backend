@@ -10,7 +10,9 @@ export const baseUrl = 'http://localhost:3000/';
 
 export const getRealUser = async (): Promise<User> => {
     const users = await query('SELECT * FROM USERS;');
+    // console.log(users);
     if (users.rowCount === 0) {
+        console.log('creating new user');
         const userModel = new UserModel();
         await userModel.create('Customer', 'One', 'securePassword');
     }
