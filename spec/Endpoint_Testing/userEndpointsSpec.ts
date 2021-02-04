@@ -6,8 +6,6 @@ import { UserModel } from '../../src/models/UserModel';
 import { User } from '../../src/interfaces/User';
 import { SQL } from '../../src/interfaces/SQL';
 
-const origTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-
 // In case users is empty
 beforeAll(async () => {
     const users: SQL = await query('SELECT * FROM USERS;');
@@ -15,7 +13,6 @@ beforeAll(async () => {
         const userModel = new UserModel();
         await userModel.create('User', 'One', '??3adxeurd');
     }
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 });
 
 describe('Test getting a user', () => {
@@ -48,31 +45,36 @@ describe('Test getting a user', () => {
                 Cookie: jwt,
             },
         };
-        console.log('UE', user);
-        console.log('UE', jwt);
-        const req = http.request(options, (res) => {
+        const req = http.request(options, (res: http.IncomingMessage) => {
             expect(res.statusCode).toBe(200);
             res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
                 if(chunk == '{}'){
                     console.error('empty data');
-                    // fail('Issue with response');
+                    fail('Issue with database response');
                 }
-                console.info('from user endpoint', chunk);
+                console.info('from user endpoint test', chunk);
+
                 expect(chunk.includes('user_id')).toBe(true);
-                expect(chunk.includes('firstName')).toBe(true);
-                expect(chunk.includes('lastName')).toBe(true);
+                expect(chunk.includes('first_name')).toBe(true);
+                expect(chunk.includes('last_name')).toBe(true);
                 expect(chunk.includes('password')).toBe(true);
+
                 const allParts = chunk.split(',');
                 const arr: string[] = [];
 
                 allParts.forEach((item) => {
-                    arr.push(item.split(':')[1].replace('}]', ''));
+                    arr.push(item.split(':')[1].replace('[{', '').replace('}]', '').replace(/"/g, ''));
                 });
-                expect(arr[1]).toBe(user.firstName);
+                
+                expect(arr[0]).toBeDefined();
+                expect(arr[1]).toBeDefined();
                 expect(arr[2]).toBeDefined();
                 expect(arr[3]).toBeDefined();
-                expect(arr[2]).toBe(user.lastName);
+
+                expect(parseInt(arr[0])).toEqual(user.user_id);
+                expect(arr[1]).toBe(String(user.first_name));
+                expect(arr[2]).toBe(String(user.last_name));
                 expect(arr[3]).toBe(user.password);
             });
         });
@@ -130,9 +132,11 @@ describe('Test posting a user', () => {
             password: '45test0~%pwd',
         });
         const req = http.request(options, (res) => {
+            console.info(res.statusCode);
             expect(res.statusCode).toBe(200);
             res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
+                console.info(chunk);
                 expect(chunk).toBe(`Successfully created User Test User`);
             });
         });
@@ -140,7 +144,3 @@ describe('Test posting a user', () => {
         req.end();
     });
 });
-
-afterAll(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = origTimeout;
-})

@@ -12,10 +12,11 @@ describe('A product test suite', () => {
     it('checks getting all products', () => {
         const req = http.get('http://localhost:3000/products/', (res: http.IncomingMessage) => {
             expect(res.statusCode).toBe(200);
+            res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
                 expect(chunk.includes('product_id')).toBeTrue;
                 expect(chunk.includes('name')).toBeTrue;
-                expect(chunk).not.toBeNull;
+                expect(chunk).not.toBeNull();
             });
             res.on('error', (e: unknown) => fail(e));
         });

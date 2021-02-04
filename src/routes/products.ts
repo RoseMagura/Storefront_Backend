@@ -7,7 +7,7 @@ import { SQL } from '../interfaces/SQL';
 const router = express.Router();
 const productModel = new ProductModel();
 
-export const isSQL = (sql: any): sql is SQL => {
+const isSQL = (sql: any): sql is SQL => {
     return 'rows' in sql && 'rowCount' in sql;
 };
 

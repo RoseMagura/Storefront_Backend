@@ -3,11 +3,13 @@ import { Request, Response } from 'express';
 import { UserModel } from '../models/UserModel';
 import { SQL } from '../interfaces/SQL';
 import { checkToken } from '../auth';
-import { isSQL } from './products';
-
 
 const router = express.Router();
 const userModel = new UserModel();
+
+const isSQL = (sql: any): sql is SQL => {
+    return 'rows' in sql && 'rowCount' in sql;
+};
 
 const getSQL = async (id: number): Promise<SQL | null> => {
     const dbRes = await userModel.getById(id);
@@ -45,11 +47,12 @@ router.get(
                 const dbRes = await getSQL(id);
                 if (dbRes !== null) {
                     dbRes.rowCount === 0
-                    ? res.send('User not found')
-                    : res.send(dbRes.rows);
+                        ? res.send('User not found')
+                        : res.send(dbRes.rows);
                 }
             } catch (error: unknown) {
-                res.send(error);
+                console.error(error);
+                res.send(`Error: ${error}`);
             }
         } else {
             res.status(tokenStatus.code);

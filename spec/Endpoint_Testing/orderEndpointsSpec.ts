@@ -73,7 +73,6 @@ beforeAll(async () => {
 describe('Checking orders (GET)', () => {
     it('fetches order by user id', async () => {
         const user: User = await getRealUser();
-        console.log('fetching order for user', user);
         const { first_name, last_name, password } = user;
         const token = await logIn(first_name, last_name, password)
             .catch((err: unknown) => fail(err));
@@ -90,7 +89,6 @@ describe('Checking orders (GET)', () => {
             expect(res.statusCode).toBe(200);
             res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
-                console.info(chunk);
                 expect(chunk.includes('order_id')).toBe(true);
                 expect(chunk.includes('user_id')).toBe(true);
                 expect(chunk.includes('numProducts')).toBe(true);
