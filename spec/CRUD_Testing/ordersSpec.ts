@@ -14,7 +14,7 @@ export const getUser = async (): Promise<User> => {
     if (users.rowCount === 0) {
         await mockUserModel.create('Customer', 'One', 'securePassword');
     }
-    users = await testQuery('SELECT * FROM USERS;')
+    users = await testQuery('SELECT * FROM USERS;');
     return users.rows[0];
 };
 // Before all, check that values are what they should be
@@ -36,7 +36,7 @@ describe('Get all orders test', () => {
         const firstOrder: Order = dbRes[0];
         expect(firstOrder.order_id).toBe(1);
         expect(firstOrder.numProducts).toBe(2);
-        expect(firstOrder.user_id).toBe( user.user_id);
+        expect(firstOrder.user_id).toBe(user.user_id);
         expect(firstOrder.completed).toBeFalse;
     });
 });

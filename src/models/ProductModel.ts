@@ -2,8 +2,7 @@ import { query } from '../db/index';
 import { SQL } from '../interfaces/SQL';
 
 export class ProductModel {
-
-    getAll(): object | unknown {
+    getAll(): SQL | unknown {
         try {
             return query('SELECT * FROM PRODUCTS').then((res: SQL) => res.rows);
         } catch (error: unknown) {

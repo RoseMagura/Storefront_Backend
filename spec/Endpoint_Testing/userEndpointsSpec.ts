@@ -5,6 +5,7 @@ import { query } from '../../src/db';
 import { UserModel } from '../../src/models/UserModel';
 import { User } from '../../src/interfaces/User';
 import { SQL } from '../../src/interfaces/SQL';
+import { RequestOptions } from 'https';
 
 // In case users is empty
 beforeAll(async () => {
@@ -17,7 +18,7 @@ beforeAll(async () => {
 
 describe('Test getting a user', () => {
     it('requires JWT', () => {
-        const options: object = {
+        const options: RequestOptions = {
             host: '0.0.0.0',
             port: '3000',
             path: `/users`,
@@ -35,8 +36,12 @@ describe('Test getting a user', () => {
 
     it('gets by id succesfully', async () => {
         const user: User = await getRealUser();
-        const jwt: unknown = await logIn(user.first_name, user.last_name, user.password);
-        const options: object = {
+        const jwt: unknown = await logIn(
+            user.first_name,
+            user.last_name,
+            user.password
+        );
+        const options: Record<string, unknown> = {
             host: '0.0.0.0',
             port: '3000',
             path: `/users/${user.user_id}`,
@@ -49,7 +54,7 @@ describe('Test getting a user', () => {
             expect(res.statusCode).toBe(200);
             res.setEncoding('utf-8');
             res.on('data', (chunk: string) => {
-                if(chunk == '{}'){
+                if (chunk == '{}') {
                     console.error('empty data');
                     fail('Issue with database response');
                 }
@@ -64,9 +69,15 @@ describe('Test getting a user', () => {
                 const arr: string[] = [];
 
                 allParts.forEach((item) => {
-                    arr.push(item.split(':')[1].replace('[{', '').replace('}]', '').replace(/"/g, ''));
+                    arr.push(
+                        item
+                            .split(':')[1]
+                            .replace('[{', '')
+                            .replace('}]', '')
+                            .replace(/"/g, '')
+                    );
                 });
-                
+
                 expect(arr[0]).toBeDefined();
                 expect(arr[1]).toBeDefined();
                 expect(arr[2]).toBeDefined();
@@ -84,7 +95,7 @@ describe('Test getting a user', () => {
 
 describe('Test posting a user', () => {
     it('requires JWT', () => {
-        const options: object = {
+        const options: RequestOptions = {
             host: '0.0.0.0',
             port: '3000',
             path: `/users`,
@@ -116,7 +127,7 @@ describe('Test posting a user', () => {
             user.last_name,
             user.password
         );
-        const options: object = {
+        const options: Record<string, unknown> = {
             host: '0.0.0.0',
             port: '3000',
             path: `/users`,

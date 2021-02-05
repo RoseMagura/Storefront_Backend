@@ -8,6 +8,9 @@ import * as jwt from 'jsonwebtoken';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { User } from './interfaces/User';
+import productsRouter from './routes/products';
+import usersRouter from './routes/users';
+import ordersRouter from './routes/orders';
 
 export const app: express.Application = express();
 const address = '0.0.0.0:3000';
@@ -16,13 +19,11 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors({ origin: address }));
 
-// initDB();
-
 app.use(express.static('public'));
 
-app.use('/products', require('./routes/products'));
-app.use('/users', require('./routes/users'));
-app.use('/orders', require('./routes/orders'));
+app.use('/products', productsRouter);
+app.use('/users', usersRouter);
+app.use('/orders', ordersRouter);
 
 app.get('/', (req: Request, res: Response): void => {
     res.send('Please Login.');
@@ -62,11 +63,15 @@ const signIn = async (
     const rows = user.rows;
     const curUser: User = rows !== undefined && rows.pop();
     const hashedPassword = curUser.password;
-    const authResult = await bcrypt.compare(password, hashedPassword, (err, res) => {
-        if (err) {
-            console.error(err);
-        } 
-        return res;
-    });
+    const authResult = await bcrypt.compare(
+        password,
+        hashedPassword,
+        (err, res) => {
+            if (err) {
+                console.error(err);
+            }
+            return res;
+        }
+    );
     return authResult;
 };

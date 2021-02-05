@@ -11,13 +11,21 @@ const isSQL = (sql: any): sql is SQL => {
     return 'rows' in sql && 'rowCount' in sql;
 };
 
-const getSQL = async (id: number): Promise<SQL | null> => {
+const getProductSQL = async (id: number): Promise<SQL | null> => {
     const dbRes = await productModel.getById(id);
     if (dbRes && isSQL(dbRes)) {
         return dbRes;
     }
     return null;
 };
+
+const postProductGetSQL = async (name: string, price: number): Promise<SQL | null> => {
+    const postRes = await productModel.create(name, price);
+    if (postRes && isSQL(postRes)) {
+        return postRes;
+    }
+    return null;
+}
 
 router.get(
     '',
@@ -35,13 +43,13 @@ router.get(
     async (req: Request, res: Response): Promise<void> => {
         const id = parseInt(req.params.id);
         try {
-            const dbRes = await getSQL(id);
+            const dbRes = await getProductSQL(id);
             if (dbRes !== null) {
                 dbRes.rowCount === 0
                     ? res.send('Product not found')
                     : res.send(dbRes.rows);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             res.send(error);
         }
     }
@@ -54,10 +62,12 @@ router.post(
         const tokenStatus = checkToken(req.cookies.token);
         if (tokenStatus.code == 200) {
             try {
-                const dbRes: any = await productModel.create(name, price);
-                dbRes.rowCount === 1
-                    ? res.send(`Sucessfully created ${name}`)
-                    : res.send(`Error creating ${name}`);
+                const dbRes = await postProductGetSQL(name, price);
+                if (dbRes !== null){
+                    dbRes.rowCount === 1
+                        ? res.send(`Sucessfully created ${name}`)
+                        : res.send(`Error creating ${name}`);
+                }
             } catch (error: unknown) {
                 res.send(error);
             }
@@ -68,4 +78,4 @@ router.post(
     }
 );
 
-module.exports = router;
+export default router;

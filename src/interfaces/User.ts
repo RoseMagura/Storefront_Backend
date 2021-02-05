@@ -1,5 +1,5 @@
 export interface User {
-    user_id: number,
+    user_id: number;
     // have the option to use either format for first name variable
     firstName: string;
     first_name?: string;

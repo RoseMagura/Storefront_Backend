@@ -3,7 +3,7 @@ import { SQL } from '../interfaces/SQL';
 import * as bcrypt from 'bcrypt';
 
 export class UserModel {
-    getAll(): object | unknown {
+    getAll(): SQL | unknown {
         try {
             return query('SELECT * FROM USERS').then((res: SQL) => res.rows);
         } catch (error: unknown) {
@@ -11,7 +11,7 @@ export class UserModel {
         }
     }
 
-    getById(id: number): object | unknown {
+    getById(id: number): SQL | unknown {
         try {
             return query(`SELECT * FROM USERS WHERE user_id = ${id}`);
         } catch (error: unknown) {

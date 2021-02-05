@@ -4,8 +4,6 @@ import { query } from '../../src/db/index';
 import { UserModel } from '../../src/models/UserModel';
 import { User } from '../../src/interfaces/User';
 
-const origTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-
 export const logIn = async (
     firstName: string | undefined,
     lastName: string | undefined,
@@ -74,9 +72,12 @@ describe('Checking orders (GET)', () => {
     it('fetches order by user id', async () => {
         const user: User = await getRealUser();
         const { first_name, last_name, password } = user;
-        const token = await logIn(first_name, last_name, password)
-            .catch((err: unknown) => fail(err));
-        const options: object = {
+        const token = await logIn(
+            first_name,
+            last_name,
+            password
+        ).catch((err: unknown) => fail(err));
+        const options: Record<string, unknown> = {
             host: '0.0.0.0',
             port: '3000',
             path: `/orders/${user.user_id}`,
@@ -100,16 +101,17 @@ describe('Checking orders (GET)', () => {
 
     it('rejects if no JWT', async () => {
         const user: User = await getRealUser();
-        http.get(`http://localhost:3000/orders/${user.user_id}`, (res: http.IncomingMessage) => {
-            expect(res.statusCode).toBe(401);
-            res.setEncoding('utf-8');
-            res.on('data', (chunk: string) => {
-                expect(chunk).toBe('This endpoint requires JWT. Please login');
-            });
-        });
+        http.get(
+            `http://localhost:3000/orders/${user.user_id}`,
+            (res: http.IncomingMessage) => {
+                expect(res.statusCode).toBe(401);
+                res.setEncoding('utf-8');
+                res.on('data', (chunk: string) => {
+                    expect(chunk).toBe(
+                        'This endpoint requires JWT. Please login'
+                    );
+                });
+            }
+        );
     });
 });
-
-afterAll(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = origTimeout;
-})

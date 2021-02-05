@@ -1,12 +1,24 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { OrderModel } from '../models/OrderModel';
-import { SQL } from '../interfaces/SQL';
 import { checkToken } from '../auth';
 import { HttpCode } from '../interfaces/HttpCode';
+import { SQL } from '../interfaces/SQL';
 
 const router = express.Router();
 const orderModel = new OrderModel();
+
+const isSQL = (sql: any): sql is SQL => {
+    return 'rows' in sql && 'rowCount' in sql;
+};
+
+const getSQL = async (id: number): Promise<SQL | null> => {
+    const dbRes = await orderModel.getByUserId(id);
+    if (dbRes && isSQL(dbRes)) {
+        return dbRes;
+    }
+    return null;
+};
 
 router.get(
     '/:id',
@@ -16,10 +28,12 @@ router.get(
         const id: number = parseInt(req.params.id);
         if (tokenStatus.code == 200) {
             try {
-                const dbRes: any = await orderModel.getByUserId(id);
-                dbRes.rowCount === 0
-                    ? res.send(`Order for user ${id} not found`)
-                    : res.send(dbRes.rows);
+                const dbRes = await getSQL(id);
+                if(dbRes !== null){
+                    dbRes.rowCount === 0
+                        ? res.send(`Order for user ${id} not found`)
+                        : res.send(dbRes.rows);
+                }
             } catch (error: unknown) {
                 res.send(error);
             }
@@ -30,4 +44,4 @@ router.get(
     }
 );
 
-module.exports = router;
+export default router;

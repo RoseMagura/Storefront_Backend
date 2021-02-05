@@ -30,7 +30,7 @@ describe('Checking root endpoint (GET)', () => {
 });
 
 describe('Checking root endpoint (POST)', () => {
-   it('Returns JWT in the cookie after logging in', async () => {
+    it('Returns JWT in the cookie after logging in', async () => {
         const user = await getRealUser();
         const postData = JSON.stringify({
             firstName: user.firstName,
@@ -48,35 +48,37 @@ describe('Checking root endpoint (POST)', () => {
             },
         };
 
-        const postReq = http.request(options, async (res: http.IncomingMessage) => {
-            try {
-                expect(res.statusCode).toBe(200);
-                if (res.headers['set-cookie'] !== undefined) {
-                    const cookie: string = res.headers['set-cookie'][0];
-                    const fullToken = cookie.split(';')[0];
-                    const justJWT = fullToken.split('=')[1];
-                    const authorized = checkToken(justJWT);
-                    expect(authorized.code).toBe(200);
-                    expect(authorized.message).toBe('Success');
-                } else {
-                    fail('NO COOKIE');
-                }
-                res.setEncoding('ascii');
-                res.on('data', (chunk: string) => {
-                    expect(chunk).toBe(
-                        `${user.firstName} ${user.lastName} successfully logged in!`
-                    );
-                });
-                postReq.on('error', (e: unknown) => {
-                    console.error(`problem with request: ${e}`);
-                });
-        
-                postReq.write(postData);
-                postReq.end();
-            } catch (err) {
-                console.info('ERROR', err);
-            }
+        const postReq = http.request(
+            options,
+            async (res: http.IncomingMessage) => {
+                try {
+                    expect(res.statusCode).toBe(200);
+                    if (res.headers['set-cookie'] !== undefined) {
+                        const cookie: string = res.headers['set-cookie'][0];
+                        const fullToken = cookie.split(';')[0];
+                        const justJWT = fullToken.split('=')[1];
+                        const authorized = checkToken(justJWT);
+                        expect(authorized.code).toBe(200);
+                        expect(authorized.message).toBe('Success');
+                    } else {
+                        fail('NO COOKIE');
+                    }
+                    res.setEncoding('ascii');
+                    res.on('data', (chunk: string) => {
+                        expect(chunk).toBe(
+                            `${user.firstName} ${user.lastName} successfully logged in!`
+                        );
+                    });
+                    postReq.on('error', (e: unknown) => {
+                        console.error(`problem with request: ${e}`);
+                    });
 
-        });
+                    postReq.write(postData);
+                    postReq.end();
+                } catch (err) {
+                    console.info('ERROR', err);
+                }
+            }
+        );
     });
 });

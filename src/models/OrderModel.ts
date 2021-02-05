@@ -6,7 +6,7 @@ export class OrderModel {
     // name: string;
     // price: number;
 
-    getAll(): object | unknown {
+    getAll(): SQL | unknown {
         try {
             return query('SELECT * FROM ORDERS').then((res: SQL) => res.rows);
         } catch (error: unknown) {

@@ -32,7 +32,7 @@ describe('Get all products test', () => {
             expect(prod.name).toBeDefined();
             expect(prod.price).toBeDefined();
             expect(prod.product_id).toBeDefined();
-        })
+        });
     });
 });
 
@@ -52,8 +52,10 @@ describe('Post a product test', () => {
         const res: SQL = await mockProductModel.create('rice', 5);
         expect(res.command).toBe('INSERT');
         expect(res.rowCount).toBe(1);
-        const newProduct: SQL = await testQuery(`SELECT * FROM PRODUCTS WHERE NAME='rice';`);
-        if(newProduct.rows !== undefined){
+        const newProduct: SQL = await testQuery(
+            `SELECT * FROM PRODUCTS WHERE NAME='rice';`
+        );
+        if (newProduct.rows !== undefined) {
             expect(newProduct.rows[0].price).toBe('5');
         }
     });

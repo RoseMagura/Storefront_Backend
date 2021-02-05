@@ -1,4 +1,4 @@
 export interface HttpCode {
-    code: number,
-    message: string
+    code: number;
+    message: string;
 }
