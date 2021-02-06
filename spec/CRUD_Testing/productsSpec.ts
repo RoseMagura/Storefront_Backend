@@ -34,13 +34,13 @@ const getAllSQL = async (): Promise<SQL | null> => {
     return null;
 };
 
-const post = async (name: string, price: number): Promise <SQL | null> => {
+const post = async (name: string, price: number): Promise<SQL | null> => {
     const postRes = await mockProductModel.create(name, price);
     if (postRes && isSQL(postRes)) {
         return postRes;
     }
     return null;
-}
+};
 
 beforeAll(async () => {
     const products = await testQuery('SELECT * FROM PRODUCTS;');
@@ -60,7 +60,8 @@ describe('Get all products test', () => {
         expect(dbRes).toBeDefined();
         // The any here is consistent with the SQL interface,
         // which is necessary for flexibility (see SQL interface)
-        const rows: any = dbRes !== null && dbRes.rows !== undefined && dbRes.rows;
+        const rows: any =
+            dbRes !== null && dbRes.rows !== undefined && dbRes.rows;
         rows.forEach((prod: Product) => {
             expect(prod.name).toBeDefined();
             expect(prod.price).toBeDefined();
@@ -77,16 +78,15 @@ describe('Get one product test', () => {
             const id = all.rows[0].product_id;
             const product = await getSQL(id);
             if (product === null || product.rows === undefined) {
-                fail('Error with response from database for product (by id).')
-            } else{
-            expect(product.rows[0].name).toBeDefined();
-            expect(product.rows[0].price).toBeDefined();
-            expect(product.rows[0].product_id).toBeDefined();
-        }
+                fail('Error with response from database for product (by id).');
+            } else {
+                expect(product.rows[0].name).toBeDefined();
+                expect(product.rows[0].price).toBeDefined();
+                expect(product.rows[0].product_id).toBeDefined();
+            }
         } else {
             fail('Error with response from database for all products.');
         }
-
     });
 });
 
@@ -95,7 +95,7 @@ describe('Post a product test', () => {
         const res = await post('rice', 5);
         if (res === null) {
             fail('Response from database is null');
-        } else{
+        } else {
             expect(res.command).toBe('INSERT');
             expect(res.rowCount).toBe(1);
             const newProduct: SQL = await testQuery(
