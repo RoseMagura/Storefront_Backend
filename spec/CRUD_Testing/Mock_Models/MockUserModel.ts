@@ -3,17 +3,15 @@ import { SQL } from '../../../src/interfaces/SQL';
 import * as bcrypt from 'bcrypt';
 
 export class MockUserModel {
-    getAll(): any {
+    getAll():  SQL | unknown {
         try {
-            return testQuery('SELECT * FROM USERS').then(
-                (res: SQL) => res.rows
-            );
+            return testQuery('SELECT * FROM USERS');
         } catch (error: unknown) {
             return error;
         }
     }
 
-    getById(id: number): any {
+    getById(id: number):  SQL | unknown {
         try {
             return testQuery(`SELECT * FROM USERS WHERE user_id = ${id}`);
         } catch (error: unknown) {
@@ -21,7 +19,7 @@ export class MockUserModel {
         }
     }
 
-    getByName(firstName: string, lastName: string): any {
+    getByName(firstName: string, lastName: string):  SQL | unknown {
         try {
             return testQuery(
                 `SELECT * FROM USERS WHERE first_name='${firstName}' and last_name='${lastName}'`
@@ -35,7 +33,7 @@ export class MockUserModel {
         firstName: string,
         lastName: string,
         password: string
-    ): Promise<any> {
+    ): Promise< SQL | unknown> {
         try {
             const hashVal = await bcrypt.hash(password, 10);
             return testQuery(

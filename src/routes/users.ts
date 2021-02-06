@@ -7,6 +7,8 @@ import { checkToken } from '../auth';
 const router = express.Router();
 const userModel = new UserModel();
 
+// Any is necessary here to allow the function
+// to process a wide variety of potential values
 const isSQL = (sql: any): sql is SQL => {
     return 'rows' in sql && 'rowCount' in sql;
 };
@@ -19,13 +21,30 @@ const getSQL = async (id: number): Promise<SQL | null> => {
     return null;
 };
 
+const getAllSQL = async(): Promise<SQL | null> => {
+    const res = await userModel.getAll();
+    if (res && isSQL(res)) {
+        return res;
+    }
+    return null;
+}
+
+const postUserGetSQL = async (firstName: string, lastName: string, password: string): Promise<SQL | null> => {
+    const postRes = await userModel.create(firstName, lastName, password);
+    if (postRes && isSQL(postRes)) {
+        return postRes;
+    }
+    return null;
+}
+
 router.get(
     '',
     async (req: Request, res: Response): Promise<void> => {
         const tokenStatus = checkToken(req.cookies.token);
+        const all = await getAllSQL();
         if (tokenStatus.code == 200) {
             try {
-                res.send(await userModel.getAll());
+                res.send(all !== null && all.rows);
             } catch (error: unknown) {
                 res.send(error);
             }
@@ -43,7 +62,6 @@ router.get(
         const tokenStatus = checkToken(req.cookies.token);
         if (tokenStatus.code == 200) {
             try {
-                // const dbRes: any = await userModel.getById(id);
                 const dbRes = await getSQL(id);
                 if (dbRes !== null) {
                     dbRes.rowCount === 0
@@ -68,12 +86,12 @@ router.post(
         const tokenStatus = checkToken(req.cookies.token);
         if (tokenStatus.code == 200) {
             try {
-                const dbRes: any = await userModel.create(
+                const dbRes = await postUserGetSQL(
                     firstName,
                     lastName,
                     password
                 );
-                dbRes.rowCount === 1
+                dbRes !== null && dbRes.rowCount === 1
                     ? res.send(
                           `Successfully created User ${firstName} ${lastName}`
                       )

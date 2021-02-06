@@ -8,6 +8,8 @@ import { SQL } from '../interfaces/SQL';
 const router = express.Router();
 const orderModel = new OrderModel();
 
+// Any is necessary here to allow the function
+// to process a wide variety of potential values
 const isSQL = (sql: any): sql is SQL => {
     return 'rows' in sql && 'rowCount' in sql;
 };

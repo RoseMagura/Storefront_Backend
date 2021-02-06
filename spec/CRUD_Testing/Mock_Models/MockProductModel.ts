@@ -2,17 +2,15 @@ import { testQuery } from '../../../src/db/index';
 import { SQL } from '../../../src/interfaces/SQL';
 
 export class MockProductModel {
-    getAll(): any {
+    getAll(): SQL | unknown {
         try {
-            return testQuery('SELECT * FROM PRODUCTS').then(
-                (res: SQL) => res.rows
-            );
+            return testQuery('SELECT * FROM PRODUCTS');
         } catch (error: unknown) {
             return error;
         }
     }
 
-    getById(id: number): any {
+    getById(id: number): SQL | unknown {
         try {
             return testQuery(`SELECT * FROM PRODUCTS WHERE product_id = ${id}`);
         } catch (error: unknown) {
@@ -20,7 +18,7 @@ export class MockProductModel {
         }
     }
 
-    create(name: string, price: number): any {
+    create(name: string, price: number): SQL | unknown {
         try {
             return testQuery(
                 `INSERT INTO products (name, price) VALUES ('${name}', ${price})`

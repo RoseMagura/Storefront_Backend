@@ -4,7 +4,7 @@ import { SQL } from '../interfaces/SQL';
 export class ProductModel {
     getAll(): SQL | unknown {
         try {
-            return query('SELECT * FROM PRODUCTS').then((res: SQL) => res.rows);
+            return query('SELECT * FROM PRODUCTS');
         } catch (error: unknown) {
             return error;
         }

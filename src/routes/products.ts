@@ -3,10 +3,13 @@ import { Request, Response } from 'express';
 import { ProductModel } from '../models/ProductModel';
 import { checkToken } from '../auth';
 import { SQL } from '../interfaces/SQL';
+import { raw } from 'body-parser';
 
 const router = express.Router();
 const productModel = new ProductModel();
 
+// Any is necessary here to allow the function
+// to process a wide variety of potential values
 const isSQL = (sql: any): sql is SQL => {
     return 'rows' in sql && 'rowCount' in sql;
 };
@@ -19,6 +22,14 @@ const getProductSQL = async (id: number): Promise<SQL | null> => {
     return null;
 };
 
+const getAllProductsSQL = async (): Promise<SQL | null> => {
+    const dbRes = await productModel.getAll();
+    if (dbRes && isSQL(dbRes)) {
+        return dbRes;
+    }
+    return null;
+}
+
 const postProductGetSQL = async (name: string, price: number): Promise<SQL | null> => {
     const postRes = await productModel.create(name, price);
     if (postRes && isSQL(postRes)) {
@@ -30,8 +41,9 @@ const postProductGetSQL = async (name: string, price: number): Promise<SQL | nul
 router.get(
     '',
     async (req: Request, res: Response): Promise<void> => {
+        const rawSQL = await getAllProductsSQL();
         try {
-            res.send(await productModel.getAll());
+            res.send(rawSQL !== null && rawSQL.rows);
         } catch (error: unknown) {
             res.send(error);
         }

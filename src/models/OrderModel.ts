@@ -2,13 +2,10 @@ import { query } from '../db/index';
 import { SQL } from '../interfaces/SQL';
 
 export class OrderModel {
-    // id: number;
-    // name: string;
-    // price: number;
 
     getAll(): SQL | unknown {
         try {
-            return query('SELECT * FROM ORDERS').then((res: SQL) => res.rows);
+            return query('SELECT * FROM ORDERS');
         } catch (error: unknown) {
             return error;
         }

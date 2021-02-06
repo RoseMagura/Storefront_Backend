@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 export class UserModel {
     getAll(): SQL | unknown {
         try {
-            return query('SELECT * FROM USERS').then((res: SQL) => res.rows);
+            return query('SELECT * FROM USERS');
         } catch (error: unknown) {
             return error;
         }
@@ -19,12 +19,12 @@ export class UserModel {
         }
     }
 
-    getByName(firstName: string, lastName: string): SQL {
+    getByName(firstName: string, lastName: string): SQL | unknown {
         try {
             return query(
                 `SELECT * FROM USERS WHERE first_name='${firstName}' and last_name='${lastName}'`
             );
-        } catch (error: any) {
+        } catch (error: unknown) {
             return error;
         }
     }

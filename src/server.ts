@@ -59,9 +59,24 @@ const signIn = async (
     password: string
 ): Promise<boolean> => {
     const userModel = new UserModel();
-    const user: SQL = await userModel.getByName(firstName, lastName);
-    const rows = user.rows;
-    const curUser: User = rows !== undefined && rows.pop();
+    // const user = await userModel.getByName(firstName, lastName);
+
+    const isSQL = (sql: any): sql is SQL => {
+        return 'rows' in sql && 'rowCount' in sql;
+    };
+    
+    const getUserSQL = async (firstName: string, lastName: string): Promise<SQL | null> => {
+        const dbRes = await userModel.getByName(firstName, lastName);
+        if (dbRes && isSQL(dbRes)) {
+            return dbRes;
+        }
+        return null;
+    };
+    const user = await getUserSQL(firstName, lastName);
+    // The any here is consistent with the SQL interface,
+    // which is necessary for flexibility (see SQL interface)
+    const rows: any = user !== null && user.rows;
+    const curUser = rows !== undefined && rows.pop();
     const hashedPassword = curUser.password;
     const authResult = await bcrypt.compare(
         password,
