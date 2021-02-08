@@ -1,5 +1,5 @@
 {
-    "spec_files": ["./spec/**/users[sS]pec.ts"],
+    "spec_files": ["./spec/**/*[sS]pec.ts"],
     "stopSpecOnExpectationFailure": true,
     "random": false
 }

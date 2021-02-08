@@ -31,7 +31,7 @@ router.get(
         if (tokenStatus.code == 200) {
             try {
                 const dbRes = await getSQL(id);
-                if(dbRes !== null){
+                if (dbRes !== null) {
                     dbRes.rowCount === 0
                         ? res.send(`Order for user ${id} not found`)
                         : res.send(dbRes.rows);

@@ -2,7 +2,7 @@ import { testQuery } from '../../../src/db/index';
 import { SQL } from '../../../src/interfaces/SQL';
 
 export class MockOrderModel {
-    getAll():  SQL | unknown {
+    getAll(): SQL | unknown {
         try {
             return testQuery('SELECT * FROM ORDERS');
         } catch (error: unknown) {
@@ -10,7 +10,7 @@ export class MockOrderModel {
         }
     }
 
-    getByUserId(id: number):  SQL | unknown {
+    getByUserId(id: number): SQL | unknown {
         try {
             return testQuery(`SELECT * FROM ORDERS WHERE user_id = ${id}`);
         } catch (error: unknown) {

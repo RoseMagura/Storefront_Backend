@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { ProductModel } from '../models/ProductModel';
 import { checkToken } from '../auth';
 import { SQL } from '../interfaces/SQL';
-import { raw } from 'body-parser';
 
 const router = express.Router();
 const productModel = new ProductModel();
@@ -28,15 +27,18 @@ const getAllProductsSQL = async (): Promise<SQL | null> => {
         return dbRes;
     }
     return null;
-}
+};
 
-const postProductGetSQL = async (name: string, price: number): Promise<SQL | null> => {
+const postProductGetSQL = async (
+    name: string,
+    price: number
+): Promise<SQL | null> => {
     const postRes = await productModel.create(name, price);
     if (postRes && isSQL(postRes)) {
         return postRes;
     }
     return null;
-}
+};
 
 router.get(
     '',
@@ -75,7 +77,7 @@ router.post(
         if (tokenStatus.code == 200) {
             try {
                 const dbRes = await postProductGetSQL(name, price);
-                if (dbRes !== null){
+                if (dbRes !== null) {
                     dbRes.rowCount === 1
                         ? res.send(`Sucessfully created ${name}`)
                         : res.send(`Error creating ${name}`);

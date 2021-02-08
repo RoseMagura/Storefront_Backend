@@ -21,21 +21,25 @@ const getSQL = async (id: number): Promise<SQL | null> => {
     return null;
 };
 
-const getAllSQL = async(): Promise<SQL | null> => {
+const getAllSQL = async (): Promise<SQL | null> => {
     const res = await userModel.getAll();
     if (res && isSQL(res)) {
         return res;
     }
     return null;
-}
+};
 
-const postUserGetSQL = async (firstName: string, lastName: string, password: string): Promise<SQL | null> => {
+const postUserGetSQL = async (
+    firstName: string,
+    lastName: string,
+    password: string
+): Promise<SQL | null> => {
     const postRes = await userModel.create(firstName, lastName, password);
     if (postRes && isSQL(postRes)) {
         return postRes;
     }
     return null;
-}
+};
 
 router.get(
     '',

@@ -51,7 +51,8 @@ describe('Get all orders test', () => {
         }
         const dbRes = await getAllSQL();
         expect(dbRes).not.toBeNull();
-        const firstOrder: Order = dbRes !== null && dbRes.rows !== undefined && dbRes.rows[0];
+        const firstOrder: Order =
+            dbRes !== null && dbRes.rows !== undefined && dbRes.rows[0];
         expect(firstOrder.order_id).toBe(1);
         expect(firstOrder.numProducts).toBe(2);
         expect(firstOrder.user_id).toBeDefined();
@@ -65,20 +66,22 @@ describe('Get one order test', () => {
         const all: SQL = await testQuery('SELECT * FROM ORDERS;');
         if (all.rowCount === 0) {
             const user = await getUser();
-            await testQuery(`INSERT INTO ORDERS(order_id, "numProducts", user_id, completed) VALUES (1, 2, ${user.user_id}, false);`);
+            await testQuery(
+                `INSERT INTO ORDERS(order_id, "numProducts", user_id, completed) VALUES (1, 2, ${user.user_id}, false);`
+            );
             const orderInfo = await getSQL(user.user_id);
             // The any here is consistent with the SQL interface,
             // which is necessary for flexibility (see SQL interface)
             const rows: any = orderInfo !== null && orderInfo.rows;
             expect(orderInfo).toBeDefined();
-            if (orderInfo !== null){
+            if (orderInfo !== null) {
                 expect(orderInfo.command).toBe('SELECT');
                 expect(orderInfo.rowCount).toBe(1);
             }
             expect(rows[0].order_id).toBe(1);
             expect(rows[0].numProducts).toBe(2);
             expect(rows[0].user_id).toBe(user.user_id);
-            expect(rows[0].completed).toBeFalse;    
+            expect(rows[0].completed).toBeFalse;
         } else {
             const currUser = all.rows !== undefined && all.rows[0].user_id;
             const orderInfo = await getSQL(currUser);
@@ -86,7 +89,7 @@ describe('Get one order test', () => {
             // which is necessary for flexibility (see SQL interface)
             const rows: any = orderInfo !== null && orderInfo.rows;
             expect(orderInfo).toBeDefined();
-            if (orderInfo !== null){
+            if (orderInfo !== null) {
                 expect(orderInfo.command).toBe('SELECT');
                 expect(orderInfo.rowCount).toBe(1);
             }

@@ -7,7 +7,6 @@ import { SQL } from './interfaces/SQL';
 import * as jwt from 'jsonwebtoken';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
-import { User } from './interfaces/User';
 import productsRouter from './routes/products';
 import usersRouter from './routes/users';
 import ordersRouter from './routes/orders';
@@ -64,8 +63,11 @@ const signIn = async (
     const isSQL = (sql: any): sql is SQL => {
         return 'rows' in sql && 'rowCount' in sql;
     };
-    
-    const getUserSQL = async (firstName: string, lastName: string): Promise<SQL | null> => {
+
+    const getUserSQL = async (
+        firstName: string,
+        lastName: string
+    ): Promise<SQL | null> => {
         const dbRes = await userModel.getByName(firstName, lastName);
         if (dbRes && isSQL(dbRes)) {
             return dbRes;

@@ -2,7 +2,6 @@ import { query } from '../db/index';
 import { SQL } from '../interfaces/SQL';
 
 export class OrderModel {
-
     getAll(): SQL | unknown {
         try {
             return query('SELECT * FROM ORDERS');
