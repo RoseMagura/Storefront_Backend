@@ -21,6 +21,8 @@ exports.up = function (db, callback) {
             product_id: { type: 'int', primaryKey: true, autoIncrement: true },
             name: 'string',
             price: 'decimal',
+            url: 'string',
+            description: 'string'
         },
         callback
     );

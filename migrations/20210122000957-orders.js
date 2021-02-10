@@ -18,7 +18,7 @@ exports.up = function (db, callback) {
     db.createTable(
         'orders',
         {
-            order_id: { type: 'int', primaryKey: true },
+            order_id: { type: 'int', primaryKey: true, autoIncrement: true },
             numProducts: 'int',
             user_id: {
                 type: 'int',

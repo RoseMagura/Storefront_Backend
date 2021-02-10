@@ -10,19 +10,22 @@ import * as cors from 'cors';
 import productsRouter from './routes/products';
 import usersRouter from './routes/users';
 import ordersRouter from './routes/orders';
+import { initDB } from './db/init';
 
 export const app: express.Application = express();
 const address = '0.0.0.0:3000';
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({ origin: address }));
+app.use(cors({ origin : '*'}));
 
 app.use(express.static('public'));
 
 app.use('/products', productsRouter);
 app.use('/users', usersRouter);
 app.use('/orders', ordersRouter);
+
+initDB();
 
 app.get('/', (req: Request, res: Response): void => {
     res.send('Please Login.');
