@@ -46,7 +46,7 @@ router.get(
     async (req: Request, res: Response): Promise<void> => {
         const tokenStatus = checkToken(req.cookies.token);
         const all = await getAllSQL();
-        if (tokenStatus.code == 200 || req.url === '/?accept') {
+        if (tokenStatus.code == 200) {
             try {
                 res.send(all !== null && all.rows);
             } catch (error: unknown) {
@@ -54,7 +54,7 @@ router.get(
             }
         } else {
             res.status(tokenStatus.code);
-            res.send(tokenStatus.message);
+            res.send(JSON.stringify(tokenStatus.message));
         }
     }
 );

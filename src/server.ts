@@ -17,7 +17,12 @@ const address = '0.0.0.0:3000';
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({ origin : '*'}));
+const options = { 
+    origin : ['http://localhost:4200', 'http://localhost:3000'],
+    exposedHeaders: ['Set-Cookie', 'Date'],
+    credentials: true
+};
+app.use(cors(options));
 
 app.use(express.static('public'));
 
@@ -28,23 +33,30 @@ app.use('/orders', ordersRouter);
 initDB();
 
 app.get('/', (req: Request, res: Response): void => {
-    res.send('Please Login.');
+    res.send(JSON.stringify('Please Login.'));
 });
 
-app.post('/', (req: Request, res: Response): void => {
+app.post('/', async (req: Request, res: Response): Promise<void> => {
     const jwtKey = process.env.JWTKEY;
     const { firstName, lastName, password } = req.body;
-    const auth = signIn(firstName, lastName, password);
+    const auth = await signIn(firstName, lastName, password).catch(err => console.error(err));
     const token = jwt.sign({ lastName }, String(jwtKey), {
         algorithm: 'HS256',
         expiresIn: 600,
     });
 
-    if (auth) {
-        res.cookie('token', token, { maxAge: 600000 });
-        res.send(`${firstName} ${lastName} successfully logged in!`);
+    if (auth !== undefined && auth) {
+        res.cookie('token', token, { maxAge: 600000, sameSite: 'strict'});
+        res.send(JSON.stringify({success: true, message: `${firstName} ${lastName} successfully logged in!`}));
     } else {
-        res.send('Unsuccessful login');
+        if (auth === undefined) {
+            // res.status(401);
+            res.send(JSON.stringify({success: false, message: 'Unsuccessful login: incorrect name(s).'}));
+
+        } else {
+            // res.status(401);
+            res.send(JSON.stringify({success: false, message: 'Unsuccessful login: incorrect password.'}));
+        }
     }
 });
 
@@ -61,7 +73,6 @@ const signIn = async (
     password: string
 ): Promise<boolean> => {
     const userModel = new UserModel();
-    // const user = await userModel.getByName(firstName, lastName);
 
     const isSQL = (sql: any): sql is SQL => {
         return 'rows' in sql && 'rowCount' in sql;
@@ -85,13 +96,7 @@ const signIn = async (
     const hashedPassword = curUser.password;
     const authResult = await bcrypt.compare(
         password,
-        hashedPassword,
-        (err, res) => {
-            if (err) {
-                console.error(err);
-            }
-            return res;
-        }
+        hashedPassword
     );
     return authResult;
 };
