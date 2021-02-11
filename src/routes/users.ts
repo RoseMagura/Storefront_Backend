@@ -87,26 +87,22 @@ router.post(
     '',
     async (req: Request, res: Response): Promise<void> => {
         const { firstName, lastName, password } = req.body;
-        const tokenStatus = checkToken(req.cookies.token);
-        if (tokenStatus.code == 200) {
-            try {
-                const dbRes = await postUserGetSQL(
-                    firstName,
-                    lastName,
-                    password
-                );
-                dbRes !== null && dbRes.rowCount === 1
-                    ? res.send(
-                          `Successfully created User ${firstName} ${lastName}`
-                      )
-                    : res.send(`Error creating User ${firstName} ${lastName}`);
-            } catch (error: unknown) {
-                res.send(error);
-            }
-        } else {
-            res.status(tokenStatus.code);
-            res.send(tokenStatus.message);
-        }
+        // Remove auth for use with frontend, so that users can 
+        // sign up without needing token        
+        try {
+            const dbRes = await postUserGetSQL(
+                firstName,
+                lastName,
+                password
+            );
+            dbRes !== null && dbRes.rowCount === 1
+                ? res.send(
+                        JSON.stringify(`Successfully created User ${firstName} ${lastName}`)
+                    )
+                : res.send(JSON.stringify(`Error creating User ${firstName} ${lastName}`));
+        } catch (error: unknown) {
+            res.send(error);
+        } 
     }
 );
 

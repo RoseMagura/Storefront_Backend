@@ -43,10 +43,9 @@ const postProductGetSQL = async (
 router.get(
     '',
     async (req: Request, res: Response): Promise<void> => {
-        console.log(req.headers);
         const rawSQL = await getAllProductsSQL();
         try {
-            res.send(rawSQL !== null && rawSQL.rows);
+            res.send(rawSQL !== null && JSON.stringify(rawSQL.rows));
         } catch (error: unknown) {
             res.send(error);
         }

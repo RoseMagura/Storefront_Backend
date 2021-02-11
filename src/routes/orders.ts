@@ -4,6 +4,7 @@ import { OrderModel } from '../models/OrderModel';
 import { checkToken } from '../auth';
 import { HttpCode } from '../interfaces/HttpCode';
 import { SQL } from '../interfaces/SQL';
+import { Product } from '../interfaces/Product';
 
 const router = express.Router();
 const orderModel = new OrderModel();
@@ -22,6 +23,14 @@ const getSQL = async (id: number): Promise<SQL | null> => {
     return null;
 };
 
+const postOrderGetSQL = async (userId: number, completed: boolean, products: Product[]): Promise<SQL | null> => {
+    const dbRes = await orderModel.createOrder(userId, completed, products);
+    if (dbRes && isSQL(dbRes)) {
+        return dbRes;
+    }
+    return null;
+};
+
 router.get(
     '/:id',
     async (req: Request, res: Response): Promise<void> => {
@@ -33,17 +42,37 @@ router.get(
                 const dbRes = await getSQL(id);
                 if (dbRes !== null) {
                     dbRes.rowCount === 0
-                        ? res.send(`Order for user ${id} not found`)
-                        : res.send(dbRes.rows);
+                        ? res.send(JSON.stringify(`Order for user ${id} not found`))
+                        : res.send(JSON.stringify(dbRes.rows));
                 }
             } catch (error: unknown) {
-                res.send(error);
+                res.send(JSON.stringify(error));
             }
         } else {
             res.status(tokenStatus.code);
-            res.send(tokenStatus.message);
+            res.send(JSON.stringify(tokenStatus.message));
         }
     }
 );
+
+router.post('/', async (req: Request, res: Response): Promise<void> => {
+    const tokenStatus: HttpCode = checkToken(req.cookies.token);
+    const { userId, completed, products } = req.body;
+    if (tokenStatus.code == 200) {
+        try {
+            const dbRes = await postOrderGetSQL(userId, completed, products);
+            if (dbRes !== null) { 
+                dbRes.rowCount === 0
+                    ? res.send(JSON.stringify(`Could not create order for user ${userId}.`)) // CHANGE ME
+                    : res.send(JSON.stringify(`Successfully created order for user ${userId}.`));
+            }
+        } catch (error: unknown) {
+            res.send(JSON.stringify(error));
+        }
+    } else {
+        res.status(tokenStatus.code);
+        res.send(JSON.stringify(tokenStatus.message));
+    }
+})
 
 export default router;

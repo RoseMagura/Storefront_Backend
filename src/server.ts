@@ -17,10 +17,10 @@ const address = '0.0.0.0:3000';
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-const options = { 
-    origin : ['http://localhost:4200', 'http://localhost:3000'],
+const options = {
+    origin: ['http://localhost:4200', 'http://localhost:3000'],
     exposedHeaders: ['Set-Cookie', 'Date'],
-    credentials: true
+    credentials: true,
 };
 app.use(cors(options));
 
@@ -36,36 +36,50 @@ app.get('/', (req: Request, res: Response): void => {
     res.send(JSON.stringify('Please Login.'));
 });
 
-app.post('/', async (req: Request, res: Response): Promise<void> => {
-    const jwtKey = process.env.JWTKEY;
-    const { firstName, lastName, password } = req.body;
-    const auth = await signIn(firstName, lastName, password).catch(err => console.error(err));
-    const token = jwt.sign({ lastName }, String(jwtKey), {
-        algorithm: 'HS256',
-        expiresIn: 600,
-    });
+app.post(
+    '/',
+    async (req: Request, res: Response): Promise<void> => {
+        const jwtKey = process.env.JWTKEY;
+        const { firstName, lastName, password } = req.body;
+        const auth = await signIn(firstName, lastName, password).catch((err) =>
+            console.error(err)
+        );
+        const token = jwt.sign({ lastName }, String(jwtKey), {
+            algorithm: 'HS256',
+            expiresIn: 600,
+        });
 
-    if (auth !== undefined && auth) {
-        res.cookie('token', token, { maxAge: 600000, sameSite: 'strict'});
-        res.send(JSON.stringify({success: true, message: `${firstName} ${lastName} successfully logged in!`}));
-    } else {
-        if (auth === undefined) {
-            // res.status(401);
-            res.send(JSON.stringify({success: false, message: 'Unsuccessful login: incorrect name(s).'}));
-
+        if (auth !== undefined && auth) {
+            res.cookie('token', token, { maxAge: 600000, sameSite: 'strict' });
+            res.send(
+                JSON.stringify({
+                    success: true,
+                    message: `${firstName} ${lastName} successfully logged in!`,
+                })
+            );
         } else {
-            // res.status(401);
-            res.send(JSON.stringify({success: false, message: 'Unsuccessful login: incorrect password.'}));
+            if (auth === undefined) {
+                res.send(
+                    JSON.stringify({
+                        success: false,
+                        message: 'Unsuccessful login: incorrect name(s).',
+                    })
+                );
+            } else {
+                res.send(
+                    JSON.stringify({
+                        success: false,
+                        message: 'Unsuccessful login: incorrect password.',
+                    })
+                );
+            }
         }
     }
-});
-
-app.listen(
-    3000,
-    async (): Promise<void> => {
-        console.log(`starting app on: ${address}`);
-    }
 );
+
+app.listen(3000, (): void => {
+    console.log(`starting app on: ${address}`);
+});
 
 const signIn = async (
     firstName: string,
@@ -94,9 +108,6 @@ const signIn = async (
     const rows: any = user !== null && user.rows;
     const curUser = rows !== undefined && rows.pop();
     const hashedPassword = curUser.password;
-    const authResult = await bcrypt.compare(
-        password,
-        hashedPassword
-    );
+    const authResult = await bcrypt.compare(password, hashedPassword);
     return authResult;
 };

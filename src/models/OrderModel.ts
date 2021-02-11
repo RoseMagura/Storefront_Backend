@@ -1,4 +1,5 @@
 import { query } from '../db/index';
+import { Product } from '../interfaces/Product';
 import { SQL } from '../interfaces/SQL';
 
 export class OrderModel {
@@ -18,13 +19,49 @@ export class OrderModel {
         }
     }
 
-    // create(name: string, price: number): SQL | unknown {
-    //     try {
-    //         return query(
-    //             `INSERT INTO ORDERS (name, price) VALUES (\'${name}\', ${price})`
-    //         );
-    //     } catch (error: unknown) {
-    //         return error;
-    //     }
-    // }
+    async createOrder(userId: number, completed: boolean, products: Product[]): Promise<SQL | unknown> {
+        const all = await query('SELECT * FROM ORDERS');
+        // Find last order's ID and add one to get the next order ID
+        const orderId = all.rows[all.rowCount - 1].order_id + 1;
+        const numProducts = products.length;
+        try {
+            // First, insert the order into orders table
+            const orderRes = await query(
+                `INSERT INTO ORDERS (order_id, "numProducts", user_id, completed) VALUES (${orderId}, ${numProducts}, ${userId}, ${completed});`
+            );
+            // Sort product array by product id
+            products.sort((a, b) => a.product_id - b.product_id);
+
+            // set up variables to count how many of each product
+            let prev: number;
+            let numbers: number[] = [];
+            let count: number[] = [];
+    
+            products.forEach((product) => {
+                // check if product is the same as the last one
+                if(product.product_id !== prev){
+                    // if different, just add with freq of one
+                    numbers.push(product.product_id);
+                    count.push(1);
+                } else {
+                    // increase that item's freq
+                    count[count.length - 1]++;
+                }
+                // update prev variable
+                prev = product.product_id;
+            });
+
+            for(let i = 0; i < numbers.length; i++){
+                const statement = `INSERT INTO ORDER_PRODUCTS (order_id, product_id, count) VALUES (${orderId}, ${numbers[i]}, ${count[i]});`;
+                try {
+                    query(statement);
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            return orderRes;
+        } catch (error: unknown) {
+            return error;
+        }
+    }
 }
