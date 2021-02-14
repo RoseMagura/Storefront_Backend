@@ -102,4 +102,15 @@ router.put('/:orderId', async (req: Request, res: Response): Promise<void> => {
     res.send(JSON.stringify('Editing order'));
 })
 
+router.put('/checkout/:orderId', async (req: Request, res: Response): Promise<void> => {
+    const id = parseInt(req.params.orderId);
+    try {
+        await query(`UPDATE orders SET "completed" = true WHERE order_id=${id}`);
+        
+    } catch (error: unknown) {
+        console.error(error);
+    }
+    res.send(JSON.stringify(`Finished checking out for order #${id}.`));
+})
+
 export default router;
