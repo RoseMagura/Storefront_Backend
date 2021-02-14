@@ -33,7 +33,7 @@ app.use('/orders', ordersRouter);
 initDB();
 
 app.get('/', (req: Request, res: Response): void => {
-    res.send(JSON.stringify('Please Login.'));
+    res.send(JSON.stringify('Please Login.'));     
 });
 
 app.post(
@@ -49,12 +49,14 @@ app.post(
             expiresIn: 600,
         });
 
-        if (auth !== undefined && auth) {
-            res.cookie('token', token, { maxAge: 600000, sameSite: 'strict' });
+        if (auth !== undefined && auth[0] === 'true') {
+            // res.cookie('token', token, { maxAge: 600000, sameSite: 'strict' });
+            // res.setHeader('COOKIE', token);
             res.send(
                 JSON.stringify({
                     success: true,
-                    message: `${firstName} ${lastName} successfully logged in!`,
+                    message: `${firstName} ${lastName} (${auth[1]}) successfully logged in!`,
+                    token
                 })
             );
         } else {
@@ -85,7 +87,7 @@ const signIn = async (
     firstName: string,
     lastName: string,
     password: string
-): Promise<boolean> => {
+): Promise<String[]> => {
     const userModel = new UserModel();
 
     const isSQL = (sql: any): sql is SQL => {
@@ -109,5 +111,5 @@ const signIn = async (
     const curUser = rows !== undefined && rows.pop();
     const hashedPassword = curUser.password;
     const authResult = await bcrypt.compare(password, hashedPassword);
-    return authResult;
+    return [String(authResult), String(curUser.user_id)];
 };

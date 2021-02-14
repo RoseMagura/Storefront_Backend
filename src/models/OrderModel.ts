@@ -19,16 +19,22 @@ export class OrderModel {
         }
     }
 
-    async createOrder(userId: number, completed: boolean, products: Product[]): Promise<SQL | unknown> {
+    async createOrder(
+        userId: number,
+        completed: boolean,
+        products: Product[]
+    ): Promise<SQL | unknown> {
         const all = await query('SELECT * FROM ORDERS');
         // Find last order's ID and add one to get the next order ID
-        const orderId = all.rows[all.rowCount - 1].order_id + 1;
+        const orderId =
+            all.rowCount === 0 ? 1 : all.rows[all.rowCount - 1].order_id + 1;
         const numProducts = products.length;
         try {
             // First, insert the order into orders table
             const orderRes = await query(
                 `INSERT INTO ORDERS (order_id, "numProducts", user_id, completed) VALUES (${orderId}, ${numProducts}, ${userId}, ${completed});`
             );
+
             // Sort product array by product id
             products.sort((a, b) => a.product_id - b.product_id);
 
@@ -36,10 +42,10 @@ export class OrderModel {
             let prev: number;
             let numbers: number[] = [];
             let count: number[] = [];
-    
+
             products.forEach((product) => {
                 // check if product is the same as the last one
-                if(product.product_id !== prev){
+                if (product.product_id !== prev) {
                     // if different, just add with freq of one
                     numbers.push(product.product_id);
                     count.push(1);
@@ -51,10 +57,10 @@ export class OrderModel {
                 prev = product.product_id;
             });
 
-            for(let i = 0; i < numbers.length; i++){
+            for (let i = 0; i < numbers.length; i++) {
                 const statement = `INSERT INTO ORDER_PRODUCTS (order_id, product_id, count) VALUES (${orderId}, ${numbers[i]}, ${count[i]});`;
                 try {
-                    query(statement);
+                    await query(statement);
                 } catch (error) {
                     console.error(error);
                 }

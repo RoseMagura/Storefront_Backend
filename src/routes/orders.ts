@@ -5,6 +5,7 @@ import { checkToken } from '../auth';
 import { HttpCode } from '../interfaces/HttpCode';
 import { SQL } from '../interfaces/SQL';
 import { Product } from '../interfaces/Product';
+import { query } from '../db';
 
 const router = express.Router();
 const orderModel = new OrderModel();
@@ -25,6 +26,7 @@ const getSQL = async (id: number): Promise<SQL | null> => {
 
 const postOrderGetSQL = async (userId: number, completed: boolean, products: Product[]): Promise<SQL | null> => {
     const dbRes = await orderModel.createOrder(userId, completed, products);
+    // console.log(dbRes);
     if (dbRes && isSQL(dbRes)) {
         return dbRes;
     }
@@ -56,23 +58,40 @@ router.get(
 );
 
 router.post('/', async (req: Request, res: Response): Promise<void> => {
-    const tokenStatus: HttpCode = checkToken(req.cookies.token);
-    const { userId, completed, products } = req.body;
+    const tokenStatus: HttpCode = checkToken(String(req.headers['set-cookie']));
+    const { userId, complete, products } = req.body;
     if (tokenStatus.code == 200) {
         try {
-            const dbRes = await postOrderGetSQL(userId, completed, products);
+            const dbRes = await postOrderGetSQL(userId, complete, products);
+            console.log(dbRes);
+            const allOrders = await query(`SELECT * FROM ORDERS`);
             if (dbRes !== null) { 
                 dbRes.rowCount === 0
-                    ? res.send(JSON.stringify(`Could not create order for user ${userId}.`)) // CHANGE ME
-                    : res.send(JSON.stringify(`Successfully created order for user ${userId}.`));
+                    ? res.send(JSON.stringify(`Could not create order for user ${userId}.`))
+                    : res.send(JSON.stringify(`Successfully created order #${allOrders.rows[allOrders.rowCount - 1].order_id} for user ${userId}.`));
             }
         } catch (error: unknown) {
+            console.error(error);
             res.send(JSON.stringify(error));
         }
     } else {
+        console.error(tokenStatus.message);
         res.status(tokenStatus.code);
         res.send(JSON.stringify(tokenStatus.message));
     }
+})
+
+router.put('/:orderId', async (req: Request, res: Response): Promise<void> => {
+    const id = parseInt(req.params.orderId);
+    console.log(req.body);
+    console.log(req.params.orderId);
+    try {
+        await query(`UPDATE orders SET "numProducts" = ${req.body.length} WHERE order_id=${id}`);
+    } catch (error: unknown) {
+        console.error(error);
+    }
+    // TODO: try catch for updating order_products
+    res.send(JSON.stringify('Editing order'));
 })
 
 export default router;
