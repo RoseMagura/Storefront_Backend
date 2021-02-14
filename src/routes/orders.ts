@@ -63,7 +63,6 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     if (tokenStatus.code == 200) {
         try {
             const dbRes = await postOrderGetSQL(userId, complete, products);
-            console.log(dbRes);
             const allOrders = await query(`SELECT * FROM ORDERS`);
             if (dbRes !== null) { 
                 dbRes.rowCount === 0
@@ -83,14 +82,23 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 
 router.put('/:orderId', async (req: Request, res: Response): Promise<void> => {
     const id = parseInt(req.params.orderId);
-    console.log(req.body);
-    console.log(req.params.orderId);
     try {
-        await query(`UPDATE orders SET "numProducts" = ${req.body.length} WHERE order_id=${id}`);
+        await query(`UPDATE orders SET "numProducts" = ${req.body.numProducts} WHERE order_id=${id}`);
     } catch (error: unknown) {
         console.error(error);
     }
-    // TODO: try catch for updating order_products
+    // try catch for updating order_products join table
+    try {
+        if (req.query.action === 'add') {
+            const newProduct: number = req.body.toAdd;
+            await query(`INSERT INTO order_products(order_id, product_id, count) VALUES (${id}, ${newProduct}, 1);`);
+        } 
+        else {
+            await query(`DELETE FROM order_products WHERE product_id = ${req.body.toDelete} AND order_id=${id};`);
+        }
+    } catch (error: unknown) {
+        console.error(error);
+    }
     res.send(JSON.stringify('Editing order'));
 })
 
