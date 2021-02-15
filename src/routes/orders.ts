@@ -24,9 +24,12 @@ const getSQL = async (id: number): Promise<SQL | null> => {
     return null;
 };
 
-const postOrderGetSQL = async (userId: number, completed: boolean, products: Product[]): Promise<SQL | null> => {
+const postOrderGetSQL = async (
+    userId: number,
+    completed: boolean,
+    products: Product[]
+): Promise<SQL | null> => {
     const dbRes = await orderModel.createOrder(userId, completed, products);
-    // console.log(dbRes);
     if (dbRes && isSQL(dbRes)) {
         return dbRes;
     }
@@ -36,15 +39,21 @@ const postOrderGetSQL = async (userId: number, completed: boolean, products: Pro
 router.get(
     '/:id',
     async (req: Request, res: Response): Promise<void> => {
-        const tokenStatus: HttpCode = checkToken(req.cookies.token);
+        const tokenStatus: HttpCode =
+            req.cookies.token === undefined
+                ? checkToken(String(req.headers['set-cookie']))
+                : checkToken(req.cookies.token);
 
         const id: number = parseInt(req.params.id);
         if (tokenStatus.code == 200) {
             try {
                 const dbRes = await getSQL(id);
+                console.log(dbRes);
                 if (dbRes !== null) {
                     dbRes.rowCount === 0
-                        ? res.send(JSON.stringify(`Order for user ${id} not found`))
+                        ? res.send(
+                              JSON.stringify(`Order for user ${id} not found`)
+                          )
                         : res.send(JSON.stringify(dbRes.rows));
                 }
             } catch (error: unknown) {
@@ -57,60 +66,106 @@ router.get(
     }
 );
 
-router.post('/', async (req: Request, res: Response): Promise<void> => {
-    const tokenStatus: HttpCode = checkToken(String(req.headers['set-cookie']));
-    const { userId, complete, products } = req.body;
-    if (tokenStatus.code == 200) {
-        try {
-            const dbRes = await postOrderGetSQL(userId, complete, products);
-            const allOrders = await query(`SELECT * FROM ORDERS`);
-            if (dbRes !== null) { 
-                dbRes.rowCount === 0
-                    ? res.send(JSON.stringify(`Could not create order for user ${userId}.`))
-                    : res.send(JSON.stringify(`Successfully created order #${allOrders.rows[allOrders.rowCount - 1].order_id} for user ${userId}.`));
+router.post(
+    '/',
+    async (req: Request, res: Response): Promise<void> => {
+        const tokenStatus: HttpCode = checkToken(
+            String(req.headers['set-cookie'])
+        );
+        const { userId, complete, products } = req.body;
+        if (tokenStatus.code == 200) {
+            try {
+                const dbRes = await postOrderGetSQL(userId, complete, products);
+                const allOrders = await query(`SELECT * FROM ORDERS`);
+                if (dbRes !== null) {
+                    dbRes.rowCount === 0
+                        ? res.send(
+                              JSON.stringify(
+                                  `Could not create order for user ${userId}.`
+                              )
+                          )
+                        : res.send(
+                              JSON.stringify(
+                                  `Successfully created order #${
+                                      allOrders.rows[allOrders.rowCount - 1]
+                                          .order_id
+                                  } for user ${userId}.`
+                              )
+                          );
+                }
+            } catch (error: unknown) {
+                console.error(error);
+                res.send(JSON.stringify(error));
             }
-        } catch (error: unknown) {
-            console.error(error);
-            res.send(JSON.stringify(error));
+        } else {
+            console.error(tokenStatus.message);
+            res.status(tokenStatus.code);
+            res.send(JSON.stringify(tokenStatus.message));
         }
-    } else {
-        console.error(tokenStatus.message);
-        res.status(tokenStatus.code);
-        res.send(JSON.stringify(tokenStatus.message));
     }
-})
+);
 
-router.put('/:orderId', async (req: Request, res: Response): Promise<void> => {
-    const id = parseInt(req.params.orderId);
-    try {
-        await query(`UPDATE orders SET "numProducts" = ${req.body.numProducts} WHERE order_id=${id}`);
-    } catch (error: unknown) {
-        console.error(error);
-    }
-    // try catch for updating order_products join table
-    try {
-        if (req.query.action === 'add') {
-            const newProduct: number = req.body.toAdd;
-            await query(`INSERT INTO order_products(order_id, product_id, count) VALUES (${id}, ${newProduct}, 1);`);
-        } 
-        else {
-            await query(`DELETE FROM order_products WHERE product_id = ${req.body.toDelete} AND order_id=${id};`);
+router.put(
+    '/:orderId',
+    async (req: Request, res: Response): Promise<void> => {
+        const id = parseInt(req.params.orderId);
+        const tokenStatus: HttpCode = checkToken(
+            String(req.headers['set-cookie'])
+        );
+        if (tokenStatus.code === 200) {
+            try {
+                await query(
+                    `UPDATE orders SET "numProducts" = ${req.body.numProducts} WHERE order_id=${id}`
+                );
+            } catch (error: unknown) {
+                console.error(error);
+            }
+            // try catch for updating order_products join table
+            try {
+                if (req.query.action === 'add') {
+                    const newProduct: number = req.body.toAdd;
+                    await query(
+                        `INSERT INTO order_products(order_id, product_id, count) VALUES (${id}, ${newProduct}, 1);`
+                    );
+                } else {
+                    await query(
+                        `DELETE FROM order_products WHERE product_id = ${req.body.toDelete} AND order_id=${id};`
+                    );
+                }
+            } catch (error: unknown) {
+                console.error(error);
+            }
+            res.send(JSON.stringify('Editing order'));
+        } else {
+            console.error(tokenStatus.message);
+            res.status(tokenStatus.code);
+            res.send(JSON.stringify(tokenStatus.message));
         }
-    } catch (error: unknown) {
-        console.error(error);
     }
-    res.send(JSON.stringify('Editing order'));
-})
+);
 
-router.put('/checkout/:orderId', async (req: Request, res: Response): Promise<void> => {
-    const id = parseInt(req.params.orderId);
-    try {
-        await query(`UPDATE orders SET "completed" = true WHERE order_id=${id}`);
-        
-    } catch (error: unknown) {
-        console.error(error);
+router.put(
+    '/checkout/:orderId',
+    async (req: Request, res: Response): Promise<void> => {
+        const id = parseInt(req.params.orderId);
+        const tokenStatus: HttpCode = checkToken(
+            String(req.headers['set-cookie'])
+        );
+        if (tokenStatus.code === 200) {
+            try {
+                await query(
+                    `UPDATE orders SET "completed" = true WHERE order_id=${id}`
+                );
+            } catch (error: unknown) {
+                console.error(error);
+            }
+            res.send(JSON.stringify(`Finished checking out for order #${id}.`));
+        } else {
+            console.error(tokenStatus.message);
+            res.status(tokenStatus.code);
+            res.send(JSON.stringify(tokenStatus.message));
+        }
     }
-    res.send(JSON.stringify(`Finished checking out for order #${id}.`));
-})
+);
 
 export default router;

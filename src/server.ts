@@ -45,8 +45,7 @@ app.post(
             console.error(err)
         );
         const token = jwt.sign({ lastName }, String(jwtKey), {
-            algorithm: 'HS256',
-            expiresIn: 600,
+            expiresIn: '1h',
         });
 
         if (auth !== undefined && auth[0] === 'true') {

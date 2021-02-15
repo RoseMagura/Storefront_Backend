@@ -1,4 +1,5 @@
 import { query } from '../db/index';
+import { Order } from '../interfaces/Order';
 import { Product } from '../interfaces/Product';
 import { SQL } from '../interfaces/SQL';
 
@@ -13,7 +14,7 @@ export class OrderModel {
 
     getByUserId(id: number): SQL | unknown {
         try {
-            return query(`SELECT * FROM ORDERS WHERE user_id = ${id}`);
+            return query(`SELECT * FROM ORDERS JOIN ORDER_PRODUCTS ON (ORDERS.ORDER_ID=ORDER_PRODUCTS.ORDER_ID) WHERE user_id = ${id}`);
         } catch (error: unknown) {
             return error;
         }
@@ -26,8 +27,9 @@ export class OrderModel {
     ): Promise<SQL | unknown> {
         const all = await query('SELECT * FROM ORDERS');
         // Find last order's ID and add one to get the next order ID
+        const sorted = all.rows.sort((a: Order, b: Order) => b.order_id - a.order_id);
         const orderId =
-            all.rowCount === 0 ? 1 : all.rows[all.rowCount - 1].order_id + 1;
+            all.rowCount === 0 ? 1 : sorted[0].order_id + 1;
         const numProducts = products.length;
         try {
             // First, insert the order into orders table
