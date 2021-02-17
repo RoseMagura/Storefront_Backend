@@ -14,6 +14,14 @@ export class OrderModel {
 
     getByUserId(id: number): SQL | unknown {
         try {
+            return query(`SELECT * FROM ORDERS WHERE user_id = ${id}`);
+        } catch (error: unknown) {
+            return error;
+        }
+    }
+
+    getJoinedByUserId(id: number): SQL | unknown {
+        try {
             return query(`SELECT * FROM ORDERS JOIN ORDER_PRODUCTS ON (ORDERS.ORDER_ID=ORDER_PRODUCTS.ORDER_ID) WHERE user_id = ${id}`);
         } catch (error: unknown) {
             return error;

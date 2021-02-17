@@ -24,6 +24,14 @@ const getSQL = async (id: number): Promise<SQL | null> => {
     return null;
 };
 
+const getJoinedSQL = async (id: number): Promise<SQL | null> => {
+    const dbRes = await orderModel.getJoinedByUserId(id);
+    if (dbRes && isSQL(dbRes)) {
+        return dbRes;
+    }
+    return null;
+};
+
 const postOrderGetSQL = async (
     userId: number,
     completed: boolean,
@@ -48,7 +56,35 @@ router.get(
         if (tokenStatus.code == 200) {
             try {
                 const dbRes = await getSQL(id);
-                console.log(dbRes);
+                if (dbRes !== null) {
+                    dbRes.rowCount === 0
+                        ? res.send(
+                              JSON.stringify(`Order for user ${id} not found`)
+                          )
+                        : res.send(JSON.stringify(dbRes.rows));
+                }
+            } catch (error: unknown) {
+                res.send(JSON.stringify(error));
+            }
+        } else {
+            res.status(tokenStatus.code);
+            res.send(JSON.stringify(tokenStatus.message));
+        }
+    }
+);
+
+router.get(
+    '/:id/joined',
+    async (req: Request, res: Response): Promise<void> => {
+        const tokenStatus: HttpCode =
+            req.cookies.token === undefined
+                ? checkToken(String(req.headers['set-cookie']))
+                : checkToken(req.cookies.token);
+
+        const id: number = parseInt(req.params.id);
+        if (tokenStatus.code == 200) {
+            try {
+                const dbRes = await getJoinedSQL(id);
                 if (dbRes !== null) {
                     dbRes.rowCount === 0
                         ? res.send(
