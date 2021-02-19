@@ -1,6 +1,6 @@
 import { testQuery } from '../../../src/db';
 import { SQL } from '../../../src/interfaces/SQL';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 export class MockUserModel {
     getAll(): SQL | unknown {

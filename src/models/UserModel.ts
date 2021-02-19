@@ -1,6 +1,6 @@
 import { query } from '../db/index';
 import { SQL } from '../interfaces/SQL';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 export class UserModel {
     getAll(): SQL | unknown {

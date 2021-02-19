@@ -1,5 +1,5 @@
 import 'jasmine';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { testQuery } from '../../src/db/index';
 import { SQL } from '../../src/interfaces/SQL';
 import { MockUserModel } from './Mock_Models/MockUserModel';

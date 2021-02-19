@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import * as bodyParser from 'body-parser';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UserModel } from './models/UserModel';
 import { SQL } from './interfaces/SQL';
 import * as jwt from 'jsonwebtoken';
