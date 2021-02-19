@@ -1,6 +1,7 @@
 {
   "scripts": {
     "watch": "tsc-watch --onSuccess \"node ./dist/server.js\"",
+    "start": "tsc-watch --onSuccess \"node ./dist/server.js\"",
     "prod": "",
     "test": "jasmine-ts --config=jasmine.json",
     "tsc": "tsc && node ./dist/server.js",
