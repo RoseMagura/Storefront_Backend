@@ -1,10 +1,9 @@
 {
   "scripts": {
-    "watch": "tsc-watch --onSuccess \"node ./dist/server.js\"",
-    "start": "tsc-watch --onSuccess \"node ./dist/server.js\"",
-    "prod": "",
+    "prod": "tsc && node ./dist/server.js",
+    "dev": "tsc-watch --onSuccess \"node ./dist/server.js\"",
+    "build": "tsc --project ./src/",
     "test": "jasmine-ts --config=jasmine.json",
-    "tsc": "tsc && node ./dist/server.js",
     "lint": "eslint . --ext .ts",
     "prettier": "npx prettier --check \"src/**/*.{js,ts}\""
   },
