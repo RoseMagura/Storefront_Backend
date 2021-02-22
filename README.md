@@ -19,13 +19,13 @@ to the Postgres database.
 
 ## Requirements
 
-To run this project, you need the latest versions of [Node](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/en/node).
-To install the other requirements, just run `yarn install`.
+To run this project, you need the latest versions of [Node](https://nodejs.org/en/) and npm.
+To install the other requirements, just run `npm install`.
 
 ## Usage
 
 The database can be accessed through port 5432, the default. 
-Use `yarn db-migrate up` to create the database using the migration files.
+Use `npm db-migrate up` to create the database using the migration files.
 The test database can also be initialized this way, passing in an 
 argument for the database name. See the [db-migrate documentation](https://db-migrate.readthedocs.io/en/latest/Getting%20Started/usage/)
 for more details.
@@ -33,7 +33,7 @@ for more details.
 Check the /schema folder for visual representations of the database
 schema, created with SchemaSpy. 
 
-To run the development server, just use the command `yarn watch` with
+To run the development server, just use the command `npm dev` with
 the Node terminal. You can access different endpoints through
 'http://localhost:3000'
 
@@ -58,7 +58,7 @@ at 'http://localhost:3000/'. For example: `{"firstName": "User", "lastName": "A"
 
 ## Testing
 
-This application includes Jasmine tests. To run, execute `yarn test` in 
+This application includes Jasmine tests. To run, execute `npm test` in 
 the terminal. 
 
 The tests are separated into endpoint and database tests. You can 
